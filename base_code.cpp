@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,21 +42,52 @@ void initialize() {
 
 void PrintHeading() {
 	printf("--------------		------------\n");
-	printf(" Index in ST		identifier\n");
+	printf(" Index in ST		 identifier\n");
 	printf("--------------		------------\n");
+}
+
+int isCharacter() {
+	return ((input >= 'a'&&input <= 'z') || (input >= 'A'&&input <= 'Z') || input == '_') ? 1 : 0;
+}
+
+int isDigit() {
+	return (input >= '0' && input <= '9') ? 1 : 0;
+}
+
+int isSeperator() {
+	return (strchr(seperators, input) == NULL) ? 0 : 1;
 }
 
 // Skip Seperators - skip over strings of spaces,tabs,newlines, . , ; : ? !
 //					 if illegal seperators,print out error message.
 void SkipSeperators() {
-
+	while (input != EOF) {
+		if (isSeperator()) input = fgetc(fp);
+		else if (!(isDigit() || isCharacter())) PrintError(illsp);
+		else return;
+	}
 }
 
 // PrintHStable - Prints the hash table.write out the hashcode and the list of identifiers
 //				  associated with each hashcode,but only for non-empty lists.
 //				  Print out the number of characters used up in ST.
 void PrintHStable() {
+	HTpointer ptr;
+	int hidx = 0, sidx = 0;
 
+	printf("\n\n[[ HASH TABLE ]]\n\n");
+
+	for (hidx = 0; hidx < HTsize; hidx++) {
+		if (HT[hidx] != NULL) {
+			printf("Hash Code %3d : ", hidx);
+			for (ptr = HT[hidx]; ptr != NULL; ptr = ptr->next) {
+				sidx = ptr->index;
+				printf("%s ", &ST[sidx]);
+			}
+			printf("\n");
+		}
+		printf("\n<%d characters are used in the string table>\n", nextfree);
+	}
 }
 
 // PrintError - Print out error messages
@@ -63,7 +96,11 @@ void PrintHStable() {
 //				illid : illegal identifier
 //				illsp :illegal seperator
 void PrintError(ERRORtypes err) {
-
+	switch (err) {
+	case overst: printf("***Error***		OVERFLOW\n"); abort();
+	case illid: printf("***Error***	%c		illegal identifier\n", input); break;
+	case illsp: printf("***Error***	%c		illegal seperator\n", input); break;
+	}
 }
 
 //ReadIO - Read identifier from the input file the string table ST directly into
@@ -72,10 +109,14 @@ void PrintError(ERRORtypes err) {
 //		   If first letter is digit, print out error message.
 void ReadID() {
 
-}// ComputeHS - Compute the hash code of identifier by summing the ordinal values of its
+}
+
+// ComputeHS - Compute the hash code of identifier by summing the ordinal values of its
 //			   characters and then taking the sum modulo the size of HT.
 void ComputeHS(int nid, int nfree) {
-
+	hashcode = 0;
+	for (int i = nid; i < nfree - 1; i++) hashcode += (int)ST[i];
+	if (hashcode >= HTsize) hashcode %= HTsize;
 }
 
 // LookupHS - For each identifier,Look it up in the hashtable for previous occurrence
@@ -92,7 +133,9 @@ void LookupHS(int nid, int hscode) {
 //		   IF list head is not a null , it adds a new identifier to the head of the chain
 void ADDHT(int hscode) {
 
-}/* MAIN - Read the identifier from the file directly into ST.
+}
+
+/* MAIN - Read the identifier from the file directly into ST.
 		  Compute its hashcode.
 		  Look up the idetifier in hashtable HT[hashcode]
 		  If matched, delete the identifier from ST and print ST - index
@@ -101,10 +144,11 @@ void ADDHT(int hscode) {
 		  Print the identifier, its index in ST, and whether it was entered or present.
 		  Print out the hashtable, and number of characters used up in ST
 */
-int main()
-{
+int main() {
 	PrintHeading();
-	initialize();	while (input != EOF) {
+	initialize();
+
+	while (input != EOF) {
 		err = noerror;
 		SkipSeperators();
 		ReadID();
