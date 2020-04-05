@@ -29,9 +29,9 @@ ERRORtypes err;
 FILE *fp; //to be a pointer to FILE
 char input;
 
-bool found;
+int found;
 int nextid;
-int nextfree;
+int nextfree = 0;
 int hashcode;
 
 //Initialize - open input file
@@ -56,6 +56,19 @@ int isDigit() {
 
 int isSeperator() {
 	return (strchr(seperators, input) == NULL) ? 0 : 1;
+}
+
+// PrintError - Print out error messages
+//				overst : overflow in ST
+//				print the hashtable and abort by calling the function "abort()".
+//				illid : illegal identifier
+//				illsp :illegal seperator
+void PrintError(ERRORtypes err) {
+	switch (err) {
+	case overst: printf("***Error***		OVERFLOW\n"); break; abort();
+	case illid: printf("***Error***	%c		illegal identifier\n", input); break;
+	case illsp: printf("***Error***	%c		illegal seperator\n", input); break;
+	}
 }
 
 // Skip Seperators - skip over strings of spaces,tabs,newlines, . , ; : ? !
@@ -86,21 +99,8 @@ void PrintHStable() {
 			}
 			printf("\n");
 		}
-		printf("\n<%d characters are used in the string table>\n", nextfree);
 	}
-}
-
-// PrintError - Print out error messages
-//				overst : overflow in ST
-//				print the hashtable and abort by calling the function "abort()".
-//				illid : illegal identifier
-//				illsp :illegal seperator
-void PrintError(ERRORtypes err) {
-	switch (err) {
-	case overst: printf("***Error***		OVERFLOW\n"); abort();
-	case illid: printf("***Error***	%c		illegal identifier\n", input); break;
-	case illsp: printf("***Error***	%c		illegal seperator\n", input); break;
-	}
+	printf("\n<%d characters are used in the string table>\n", nextfree);
 }
 
 //ReadIO - Read identifier from the input file the string table ST directly into
@@ -115,7 +115,8 @@ void ReadID() {
 //			   characters and then taking the sum modulo the size of HT.
 void ComputeHS(int nid, int nfree) {
 	hashcode = 0;
-	for (int i = nid; i < nfree - 1; i++) hashcode += (int)ST[i];
+	for (int i = nid; i < nfree - 1; i++)
+		hashcode += ((ST[i] >= 'A') && (ST[i] <= 'Z')) ? (int)ST[i] + 32 : (int)ST[i];
 	if (hashcode >= HTsize) hashcode %= HTsize;
 }
 
@@ -145,8 +146,12 @@ void ADDHT(int hscode) {
 		  Print out the hashtable, and number of characters used up in ST
 */
 int main() {
-	PrintHeading();
 	initialize();
+	if (fp == NULL) {
+		printf("Input file not found.\n");
+		return -1;
+	}
+	PrintHeading();
 
 	while (input != EOF) {
 		err = noerror;
@@ -155,7 +160,8 @@ int main() {
 		if (input != EOF && err != illid) {
 			if (nextfree == STsize) {
 				// print error message
-				PrintError(overst);
+				err = overst;
+				PrintError(err);
 			}
 			ST[nextfree++] = '\0';
 			ComputeHS(nextid, nextfree);
@@ -170,4 +176,5 @@ int main() {
 		}
 	}
 	PrintHStable();
+	getchar();
 }
