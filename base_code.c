@@ -134,15 +134,15 @@ void LookupHS(int nid, int hscode) {
 //		   IF list head is not a null , it adds a new identifier to the head of the chain
 void ADDHT(int hscode) {
 	HTentry new_entry = {nextid,NULL};
-	if(HT[hscode]==NULL){
-		HT[hscode]=&new_entry;
-	}
-	else{
+	if(HT[hscode]!=NULL){
 		HTentry* temp_p = HT[hscode];
 		while(temp_p->next!=NULL){
 			temp_p = temp_p->next;
 		}
 		temp_p->next = &new_entry;
+	}
+	else{
+		HT[hscode]=&new_entry;
 	}
 }
 
