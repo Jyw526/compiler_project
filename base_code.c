@@ -74,9 +74,11 @@ void PrintError(ERRORtypes err) {
 // Skip Seperators - skip over strings of spaces,tabs,newlines, . , ; : ? !
 //					 if illegal seperators,print out error message.
 void SkipSeperators() {
-	if (isSeperator()) input = fgetc(fp);
-	else if (!(isDigit() || isCharacter())) PrintError(illsp);
-	else return;
+	while (input != EOF) {
+		if (isSeperator()) input = fgetc(fp);
+		else if (!(isDigit() || isCharacter())) PrintError(illsp);
+		else return;
+	}
 }
 
 // PrintHStable - Prints the hash table.write out the hashcode and the list of identifiers
@@ -154,8 +156,8 @@ int main() {
 	while (input != EOF) {
 		err = noerror;
 		SkipSeperators();
+		ReadID();
 		if (input != EOF && err != illid) {
-			ReadID();
 			if (nextfree == STsize) {
 				// print error message
 				err = overst;
