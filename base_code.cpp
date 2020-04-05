@@ -115,7 +115,8 @@ void ReadID() {
 //			   characters and then taking the sum modulo the size of HT.
 void ComputeHS(int nid, int nfree) {
 	hashcode = 0;
-	for (int i = nid; i < nfree - 1; i++) hashcode += (int)ST[i];
+	for (int i = nid; i < nfree - 1; i++)
+		hashcode += ((ST[i] >= 'A') && (ST[i] <= 'Z')) ? (int)ST[i] + 32 : (int)ST[i];
 	if (hashcode >= HTsize) hashcode %= HTsize;
 }
 
