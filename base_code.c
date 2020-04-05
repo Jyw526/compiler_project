@@ -8,7 +8,7 @@
 #define STsize 1000	//size of string table
 #define HTsize 100	//size of hash table
 
-// more define variables¡¦
+// more define variablesï¿½ï¿½
 typedef struct HTentry *HTpointer;
 typedef struct HTentry {
 	int index;		//index of identifier in ST
@@ -23,7 +23,7 @@ char seperators[] = " .,;:?!\t\n";
 HTpointer HT[HTsize];
 char ST[STsize];
 
-// more global variables¡¦
+// more global variablesï¿½ï¿½
 ERRORtypes err;
 
 FILE *fp; //to be a pointer to FILE
@@ -133,7 +133,17 @@ void LookupHS(int nid, int hscode) {
 //		   starting index of the identifier in ST.
 //		   IF list head is not a null , it adds a new identifier to the head of the chain
 void ADDHT(int hscode) {
-
+	HTentry new_entry = {nextid,NULL};
+	if(HT[hscode]==NULL){
+		HT[hscode]=&new_entry;
+	}
+	else{
+		HTentry* temp_p = HT[hscode];
+		while(temp_p->next!=NULL){
+			temp_p = temp_p->next;
+		}
+		temp_p->next = &new_entry;
+	}
 }
 
 /* MAIN - Read the identifier from the file directly into ST.
