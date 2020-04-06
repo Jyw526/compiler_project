@@ -58,6 +58,19 @@ int isSeperator() {
 	return (strchr(seperators, input) == NULL) ? 0 : 1;
 }
 
+// PrintError - Print out error messages
+//				overst : overflow in ST
+//				print the hashtable and abort by calling the function "abort()".
+//				illid : illegal identifier
+//				illsp :illegal seperator
+void PrintError(ERRORtypes err) {
+	switch (err) {
+	case overst: printf("***Error***		OVERFLOW\n"); break; abort();
+	case illid: printf("***Error***	%c		illegal identifier\n", input); break;
+	case illsp: printf("***Error***	%c		illegal seperator\n", input); break;
+	}
+}
+
 // Skip Seperators - skip over strings of spaces,tabs,newlines, . , ; : ? !
 //					 if illegal seperators,print out error message.
 void SkipSeperators() {
