@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define FILE_NAME "testdata2.txt"
+#define FILE_NAME "testdata.txt"
 #define STsize 1000	//size of string table
 #define HTsize 100	//size of hash table
 
@@ -33,6 +33,7 @@ int found;
 int nextid;
 int nextfree = 0;
 int hashcode;
+int stidx;
 
 //Initialize - open input file
 void initialize() {
@@ -67,10 +68,10 @@ void PrintError(ERRORtypes err) {
 	switch (err) {
 	case overst: printf("***Error***		OVERFLOW\n"); break; abort();
 	case illid: printf("***Error***	");
-				for (int i = nextid; i < nextfree; i++) {
-					printf("%c", ST[i]);
-				}
-				printf("		illegal identifier\n"); break;
+		for (int i = nextid; i < nextfree; i++) {
+			printf("%c", ST[i]);
+		}
+		printf("		illegal identifier\n"); break;
 	case illsp: printf("***Error***	%c		illegal seperator\n", input); break;
 	}
 }
@@ -80,7 +81,7 @@ void PrintError(ERRORtypes err) {
 void SkipSeperators() {
 	while (input != EOF) {
 		if (isSeperator()) input = fgetc(fp);
-		else if (!(isDigit() || isCharacter())) { PrintError(illsp); input=fgetc(fp);}
+		else if (!(isDigit() || isCharacter())) { PrintError(illsp); input = fgetc(fp); }
 		else return;
 	}
 }
@@ -117,28 +118,29 @@ void ReadID() {
 	if (isDigit()) {
 		err = illid;
 	}
-		while (input != EOF && (isCharacter() || isDigit())) {
-			
-			//ST사이즈 초과시 에러
-			if (nextfree == STsize) {
-				err = overst;
-				PrintError(overst);
-			}
-			//10글자 초과할 시 
-			if (nextfree - nextid == 10) {
-				break;
-			}
-			//문자나 숫자인 경우 
-			if (input >= 'A' && input <= 'Z')
-				input += 32;
-			ST[nextfree++] = input;
-			input = fgetc(fp);
+	while (input != EOF && (isCharacter() || isDigit())) {
+
+		//ST사이즈 초과시 에러
+		if (nextfree == STsize) {
+			err = overst;
+			PrintError(overst);
+		}
+		//10글자 초과할 시 
+		if (nextfree - nextid == 10) {
+			break;
+		}
+		//문자나 숫자인 경우 
+		if (input >= 'A' && input <= 'Z')
+			input += 32;
+		ST[nextfree++] = input;
+		input = fgetc(fp);
 	}
-	if(err==illid){
+	if (err == illid) {
 		PrintError(err);
-		nextid=nextfree;
+		for (int i = nextid; i < nextfree; i++) ST[i] = '/0';
+		nextfree = nextid;
 	}
-	
+
 }
 
 // ComputeHS - Compute the hash code of identifier by summing the ordinal values of its
@@ -158,12 +160,13 @@ void LookupHS(int nid, int hscode) {
 	HTpointer pt;
 	int curIdx, searchIdx;
 	found = 0;
-	if ((HT[hashcode] != NULL)) {
+	if (HT[hashcode] != NULL) {
 		pt = HT[hashcode];
-		while (pt != NULL && found == 0) {	
+		while (pt != NULL && found == 0) {
 			found = 1;
 			curIdx = nid;
 			searchIdx = pt->index;
+			stidx = searchIdx;
 			while (ST[curIdx] != '\0' && ST[searchIdx] != '\0' && found == 1) {
 				if (ST[curIdx] != ST[searchIdx]) {
 					found = 0;
@@ -183,18 +186,18 @@ void LookupHS(int nid, int hscode) {
 //		   starting index of the identifier in ST.
 //		   IF list head is not a null , it adds a new identifier to the head of the chain
 void ADDHT(int hscode) {
-	HTpointer new_entry = (HTpointer) malloc(sizeof(HTentry));
-	new_entry->index=nextid;
-	new_entry->next=NULL;
+	HTpointer new_entry = (HTpointer)malloc(sizeof(HTentry));
+	new_entry->index = nextid;
+	new_entry->next = NULL;
 	if (HT[hscode] != NULL) {
 		HTpointer temp_p = HT[hscode];
 		while (temp_p->next != NULL) {
 			temp_p = temp_p->next;
 		}
-		temp_p->next=new_entry;
+		temp_p->next = new_entry;
 	}
 	else {
-		HT[hscode]=new_entry;
+		HT[hscode] = new_entry;
 	}
 }
 
@@ -219,9 +222,9 @@ int main() {
 		err = noerror;
 		SkipSeperators();
 		ReadID();
-		if (err != illid) {
-			
-			if (nextfree == STsize) {
+		if (input != EOF && err != illid) {
+
+			if (nextfree >= STsize) {
 				// print error message
 				err = overst;
 				PrintError(err);
@@ -238,11 +241,12 @@ int main() {
 				ADDHT(hashcode);
 			}
 			else {
-				printf("%6d                        ", nextid);
+				printf("%6d                        ", stidx);
 				for (int i = nextid; i < nextfree; i++) {
 					printf("%c", ST[i]);
 				}
 				printf("        (already existed)\n");
+				for (int i = nextid; i < nextfree; i++) ST[i] = '/0';
 				nextfree = nextid;
 			}
 		}
