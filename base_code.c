@@ -29,8 +29,8 @@ ERRORtypes err;
 FILE *fp; //to be a pointer to FILE
 char input;
 
-bool found;
-int nextid = 0;
+int found;
+int nextid;
 int nextfree = 0;
 int hashcode;
 
@@ -86,21 +86,8 @@ void PrintHStable() {
 			}
 			printf("\n");
 		}
-		printf("\n<%d characters are used in the string table>\n", nextfree);
 	}
-}
-
-// PrintError - Print out error messages
-//				overst : overflow in ST
-//				print the hashtable and abort by calling the function "abort()".
-//				illid : illegal identifier
-//				illsp :illegal seperator
-void PrintError(ERRORtypes err) {
-	switch (err) {
-	case overst: printf("***Error***		OVERFLOW\n"); abort();
-	case illid: printf("***Error***	%c		illegal identifier\n", input); break;
-	case illsp: printf("***Error***	%c		illegal seperator\n", input); break;
-	}
+	printf("\n<%d characters are used in the string table>\n", nextfree);
 }
 
 //ReadIO - Read identifier from the input file the string table ST directly into
@@ -177,7 +164,17 @@ void LookupHS(int nid, int hscode) {
 //		   starting index of the identifier in ST.
 //		   IF list head is not a null , it adds a new identifier to the head of the chain
 void ADDHT(int hscode) {
-
+	HTentry new_entry = {nextid,NULL};
+	if(HT[hscode]!=NULL){
+		HTentry* temp_p = HT[hscode];
+		while(temp_p->next!=NULL){
+			temp_p = temp_p->next;
+		}
+		temp_p->next = &new_entry;
+	}
+	else{
+		HT[hscode]=&new_entry;
+	}
 }
 
 /* MAIN - Read the identifier from the file directly into ST.
@@ -190,8 +187,12 @@ void ADDHT(int hscode) {
 		  Print out the hashtable, and number of characters used up in ST
 */
 int main() {
-	PrintHeading();
 	initialize();
+	if (fp == NULL) {
+		printf("Input file not found.\n");
+		return -1;
+	}
+	PrintHeading();
 
 	while (input != EOF) {
 		err = noerror;
@@ -200,7 +201,8 @@ int main() {
 		if (input != EOF && err != illid) {
 			if (nextfree == STsize) {
 				// print error message
-				PrintError(overst);
+				err = overst;
+				PrintError(err);
 			}
 			ST[nextfree++] = '\0';
 			ComputeHS(nextid, nextfree);
@@ -215,4 +217,5 @@ int main() {
 		}
 	}
 	PrintHStable();
+	getchar();
 }
