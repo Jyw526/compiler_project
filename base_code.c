@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define FILE_NAME "testdata.txt"
+#define FILE_NAME "testdata1.txt"
 #define STsize 1000	//size of string table
 #define HTsize 100	//size of hash table
 
@@ -34,6 +34,7 @@ int nextid;
 int nextfree = 0;
 int hashcode;
 int stidx;
+int checkLen = 1;
 
 //Initialize - open input file
 void initialize() {
@@ -80,7 +81,7 @@ void PrintError(ERRORtypes err) {
 //					 if illegal seperators,print out error message.
 void SkipSeperators() {
 	while (input != EOF) {
-		if (isSeperator()) input = fgetc(fp);
+		if (isSeperator()) { input = fgetc(fp); checkLen = 1; }
 		else if (!(isDigit() || isCharacter())) { PrintError(illsp); input = fgetc(fp); }
 		else return;
 	}
@@ -114,6 +115,7 @@ void PrintHStable() {
 //		   If first letter is digit, print out error message.
 void ReadID() {
 	nextid = nextfree;
+
 	//첫글자 숫자인 경우 error
 	if (isDigit()) {
 		err = illid;
@@ -127,12 +129,14 @@ void ReadID() {
 		}
 		//10글자 초과할 시 
 		if (nextfree - nextid == 10) {
-			break;
+			checkLen = 0;
 		}
-		//문자나 숫자인 경우 
-		if (input >= 'A' && input <= 'Z')
-			input += 32;
-		ST[nextfree++] = input;
+		if (checkLen) {
+			if (input >= 'A' && input <= 'Z')
+				input += 32;
+			ST[nextfree++] = input;
+		}
+		
 		input = fgetc(fp);
 	}
 	if (err == illid) {
