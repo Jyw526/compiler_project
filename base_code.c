@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define FILE_NAME "testdata0.txt"
+#define FILE_NAME "testdata2.txt"
 #define STsize 1000	//size of string table
 #define HTsize 100	//size of hash table
 
@@ -66,7 +66,11 @@ int isSeperator() {
 void PrintError(ERRORtypes err) {
 	switch (err) {
 	case overst: printf("***Error***		OVERFLOW\n"); break; abort();
-	case illid: printf("***Error***	%c		illegal identifier\n", input); break;
+	case illid: printf("***Error***	");
+				for (int i = nextid; i < nextfree; i++) {
+					printf("%c", ST[i]);
+				}
+				printf("		illegal identifier\n"); break;
 	case illsp: printf("***Error***	%c		illegal seperator\n", input); break;
 	}
 }
@@ -76,7 +80,7 @@ void PrintError(ERRORtypes err) {
 void SkipSeperators() {
 	while (input != EOF) {
 		if (isSeperator()) input = fgetc(fp);
-		else if (!(isDigit() || isCharacter())) PrintError(illsp);
+		else if (!(isDigit() || isCharacter())) { PrintError(illsp); input=fgetc(fp);}
 		else return;
 	}
 }
@@ -112,9 +116,7 @@ void ReadID() {
 	//첫글자 숫자인 경우 error
 	if (isDigit()) {
 		err = illid;
-		PrintError(illid);
 	}
-	else {
 		while (input != EOF && (isCharacter() || isDigit())) {
 			
 			//ST사이즈 초과시 에러
@@ -131,8 +133,12 @@ void ReadID() {
 				input += 32;
 			ST[nextfree++] = input;
 			input = fgetc(fp);
-		}
 	}
+	if(err==illid){
+		PrintError(err);
+		nextid=nextfree;
+	}
+	
 }
 
 // ComputeHS - Compute the hash code of identifier by summing the ordinal values of its
