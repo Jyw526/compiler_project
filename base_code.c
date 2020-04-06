@@ -8,7 +8,7 @@
 #define STsize 1000	//size of string table
 #define HTsize 100	//size of hash table
 
-// more define variables��
+// more define variables¡¦
 typedef struct HTentry *HTpointer;
 typedef struct HTentry {
 	int index;		//index of identifier in ST
@@ -23,7 +23,7 @@ char seperators[] = " .,;:?!\t\n";
 HTpointer HT[HTsize];
 char ST[STsize];
 
-// more global variables��
+// more global variables¡¦
 ERRORtypes err;
 
 FILE *fp; //to be a pointer to FILE
@@ -56,19 +56,6 @@ int isDigit() {
 
 int isSeperator() {
 	return (strchr(seperators, input) == NULL) ? 0 : 1;
-}
-
-// PrintError - Print out error messages
-//				overst : overflow in ST
-//				print the hashtable and abort by calling the function "abort()".
-//				illid : illegal identifier
-//				illsp :illegal seperator
-void PrintError(ERRORtypes err) {
-	switch (err) {
-	case overst: printf("***Error***		OVERFLOW\n"); break; abort();
-	case illid: printf("***Error***	%c		illegal identifier\n", input); break;
-	case illsp: printf("***Error***	%c		illegal seperator\n", input); break;
-	}
 }
 
 // Skip Seperators - skip over strings of spaces,tabs,newlines, . , ; : ? !
@@ -108,15 +95,41 @@ void PrintHStable() {
 //		   An identifier is a string of letters and digits, starting with a letter.
 //		   If first letter is digit, print out error message.
 void ReadID() {
-
+nextid = nextfree;
+	//첫글자 숫자인 경우 error
+	if (isDigit()) {
+		PrintError(illid);
+	}
+	else {
+		while (input != EOF) {
+			//ST사이즈 초과시 에러
+			if (nextfree == STsize) {
+				PrintError(overst);
+			}
+			//10글자 초과할 시 
+			if (nextfree - nextid == 10) {
+				break;
+			}
+			//문자나 숫자인 경우 
+			if (isCharacter() || isDigit()) {
+				if (input >= 'A' && input <= 'Z')
+					input += 32;
+				ST[nextfree++] = input;
+				input = fgetc(fp);
+			}
+			//문자나 숫자가 아닌 경우 에러  
+			else {
+				PrintError(illid);
+			}
+		}
+	}
 }
 
 // ComputeHS - Compute the hash code of identifier by summing the ordinal values of its
 //			   characters and then taking the sum modulo the size of HT.
 void ComputeHS(int nid, int nfree) {
 	hashcode = 0;
-	for (int i = nid; i < nfree - 1; i++)
-		hashcode += ((ST[i] >= 'A') && (ST[i] <= 'Z')) ? (int)ST[i] + 32 : (int)ST[i];
+	for (int i = nid; i < nfree - 1; i++) hashcode += (int)ST[i];
 	if (hashcode >= HTsize) hashcode %= HTsize;
 }
 
@@ -125,7 +138,25 @@ void ComputeHS(int nid, int nfree) {
 //			  Otherwise flase.
 //			  If find a match, save the starting index of ST in same id.
 void LookupHS(int nid, int hscode) {
+	//HT[hashcode] is not nill, search the linked list for identifier
+	if((HT[hashcode] != NULL)) {
+		HTpointer pt = HT[hashcode];
+		while (pt != NULL) {
+			int curIdx = nid;
+			int searchIdx = pt->index;
 
+			while (ST[curIdx] != '\0' && ST[searchIdx] != '\0') {
+				if (ST[curIdx] != ST[searchIdx]) {
+					found = false;
+					break;
+				}
+				curIdx++;
+				searchIdx++;
+			}
+			if (found) break;
+			pt = pt->next;
+		}
+	}
 }
 
 // ADDHT - Add a new identifier to the hash table.
