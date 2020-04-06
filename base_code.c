@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define FILE_NAME "testdata1.txt"
+#define FILE_NAME "testdata0.txt"
 #define STsize 1000	//size of string table
 #define HTsize 100	//size of hash table
 
@@ -154,15 +154,11 @@ void LookupHS(int nid, int hscode) {
 	found = 0;
 	if ((HT[hashcode] != NULL)) {
 		pt = HT[hashcode];
-		while (pt != NULL && found == 0) {
-			
+		while (pt != NULL && found == 0) {	
 			found = 1;
 			curIdx = nid;
 			searchIdx = pt->index;
-			printf("%d ", curIdx);
-			printf("%d \n", searchIdx);
 			while (ST[curIdx] != '\0' && ST[searchIdx] != '\0' && found == 1) {
-				printf("% ");
 				if (ST[curIdx] != ST[searchIdx]) {
 					found = 0;
 				}
@@ -171,7 +167,6 @@ void LookupHS(int nid, int hscode) {
 					searchIdx++;
 				}
 			}
-			printf("\n");
 			pt = pt->next;
 		}
 	}
@@ -182,16 +177,18 @@ void LookupHS(int nid, int hscode) {
 //		   starting index of the identifier in ST.
 //		   IF list head is not a null , it adds a new identifier to the head of the chain
 void ADDHT(int hscode) {
-	HTentry new_entry = { nextid,NULL };
+	HTpointer new_entry = (HTpointer) malloc(sizeof(HTentry));
+	new_entry->index=nextid;
+	new_entry->next=NULL;
 	if (HT[hscode] != NULL) {
-		HTentry* temp_p = HT[hscode];
+		HTpointer temp_p = HT[hscode];
 		while (temp_p->next != NULL) {
 			temp_p = temp_p->next;
 		}
-		temp_p->next = &new_entry;
+		temp_p->next=new_entry;
 	}
 	else {
-		HT[hscode] = &new_entry;
+		HT[hscode]=new_entry;
 	}
 }
 
@@ -216,7 +213,7 @@ int main() {
 		err = noerror;
 		SkipSeperators();
 		ReadID();
-		if (input != EOF && err != illid) {
+		if (err != illid) {
 			
 			if (nextfree == STsize) {
 				// print error message
@@ -246,4 +243,6 @@ int main() {
 	}
 	PrintHStable();
 	getchar();
+
+	fclose(fp);
 }
