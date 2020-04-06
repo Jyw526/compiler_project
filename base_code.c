@@ -4,12 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define FILE_NAME "testdata.txt"
+#define FILE_NAME "testdata1.txt"
 #define STsize 1000	//size of string table
 #define HTsize 100	//size of hash table
 
 // more define variables¡¦
-typedef struct HTentry *HTpointer;
+typedef struct HTentry* HTpointer;
 typedef struct HTentry {
 	int index;		//index of identifier in ST
 	HTpointer next;	//pointer to next identifier
@@ -26,7 +26,7 @@ char ST[STsize];
 // more global variables¡¦
 ERRORtypes err;
 
-FILE *fp; //to be a pointer to FILE
+FILE* fp; //to be a pointer to FILE
 char input;
 
 int found;
@@ -47,7 +47,7 @@ void PrintHeading() {
 }
 
 int isCharacter() {
-	return ((input >= 'a'&&input <= 'z') || (input >= 'A'&&input <= 'Z') || input == '_') ? 1 : 0;
+	return ((input >= 'a' && input <= 'z') || (input >= 'A' && input <= 'Z') || input == '_') ? 1 : 0;
 }
 
 int isDigit() {
@@ -108,15 +108,18 @@ void PrintHStable() {
 //		   An identifier is a string of letters and digits, starting with a letter.
 //		   If first letter is digit, print out error message.
 void ReadID() {
-nextid = nextfree;
+	nextid = nextfree;
 	//첫글자 숫자인 경우 error
 	if (isDigit()) {
+		err = illid;
 		PrintError(illid);
 	}
 	else {
-		while (input != EOF) {
+		while (input != EOF && (isCharacter() || isDigit())) {
+			
 			//ST사이즈 초과시 에러
 			if (nextfree == STsize) {
+				err = overst;
 				PrintError(overst);
 			}
 			//10글자 초과할 시 
@@ -124,16 +127,10 @@ nextid = nextfree;
 				break;
 			}
 			//문자나 숫자인 경우 
-			if (isCharacter() || isDigit()) {
-				if (input >= 'A' && input <= 'Z')
-					input += 32;
-				ST[nextfree++] = input;
-				input = fgetc(fp);
-			}
-			//문자나 숫자가 아닌 경우 에러  
-			else {
-				PrintError(illid);
-			}
+			if (input >= 'A' && input <= 'Z')
+				input += 32;
+			ST[nextfree++] = input;
+			input = fgetc(fp);
 		}
 	}
 }
@@ -152,21 +149,29 @@ void ComputeHS(int nid, int nfree) {
 //			  If find a match, save the starting index of ST in same id.
 void LookupHS(int nid, int hscode) {
 	//HT[hashcode] is not nill, search the linked list for identifier
-	if((HT[hashcode] != NULL)) {
-		HTpointer pt = HT[hashcode];
-		while (pt != NULL) {
-			int curIdx = nid;
-			int searchIdx = pt->index;
-
-			while (ST[curIdx] != '\0' && ST[searchIdx] != '\0') {
+	HTpointer pt;
+	int curIdx, searchIdx;
+	found = 0;
+	if ((HT[hashcode] != NULL)) {
+		pt = HT[hashcode];
+		while (pt != NULL && found == 0) {
+			
+			found = 1;
+			curIdx = nid;
+			searchIdx = pt->index;
+			printf("%d ", curIdx);
+			printf("%d \n", searchIdx);
+			while (ST[curIdx] != '\0' && ST[searchIdx] != '\0' && found == 1) {
+				printf("% ");
 				if (ST[curIdx] != ST[searchIdx]) {
-					found = false;
-					break;
+					found = 0;
 				}
-				curIdx++;
-				searchIdx++;
+				else {
+					curIdx++;
+					searchIdx++;
+				}
 			}
-			if (found) break;
+			printf("\n");
 			pt = pt->next;
 		}
 	}
@@ -177,16 +182,16 @@ void LookupHS(int nid, int hscode) {
 //		   starting index of the identifier in ST.
 //		   IF list head is not a null , it adds a new identifier to the head of the chain
 void ADDHT(int hscode) {
-	HTentry new_entry = {nextid,NULL};
-	if(HT[hscode]!=NULL){
+	HTentry new_entry = { nextid,NULL };
+	if (HT[hscode] != NULL) {
 		HTentry* temp_p = HT[hscode];
-		while(temp_p->next!=NULL){
+		while (temp_p->next != NULL) {
 			temp_p = temp_p->next;
 		}
 		temp_p->next = &new_entry;
 	}
-	else{
-		HT[hscode]=&new_entry;
+	else {
+		HT[hscode] = &new_entry;
 	}
 }
 
@@ -212,6 +217,7 @@ int main() {
 		SkipSeperators();
 		ReadID();
 		if (input != EOF && err != illid) {
+			
 			if (nextfree == STsize) {
 				// print error message
 				err = overst;
@@ -221,11 +227,20 @@ int main() {
 			ComputeHS(nextid, nextfree);
 			LookupHS(nextid, hashcode);
 			if (!found) {
-				// print message
+				printf("%6d                        ", nextid);
+				for (int i = nextid; i < nextfree; i++) {
+					printf("%c", ST[i]);
+				}
+				printf("        (entered)\n");
 				ADDHT(hashcode);
 			}
 			else {
-				// print message
+				printf("%6d                        ", nextid);
+				for (int i = nextid; i < nextfree; i++) {
+					printf("%c", ST[i]);
+				}
+				printf("        (already existed)\n");
+				nextfree = nextid;
 			}
 		}
 	}
