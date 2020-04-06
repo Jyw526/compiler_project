@@ -82,7 +82,11 @@ void PrintError(ERRORtypes err) {
 void SkipSeperators() {
 	while (input != EOF) {
 		if (isSeperator()) { input = fgetc(fp); checkLen = 1; }
-		else if (!(isDigit() || isCharacter())) { PrintError(illsp); input = fgetc(fp); }
+		else if (!(isDigit() || isCharacter())) {
+			PrintError(illsp);
+			input = fgetc(fp); 
+			checkLen = 1;
+		}
 		else return;
 	}
 }
@@ -226,7 +230,7 @@ int main() {
 		err = noerror;
 		SkipSeperators();
 		ReadID();
-		if (input != EOF && err != illid) {
+		if (err != illid && (ST[nextid] != 0 || input != EOF)) {
 
 			if (nextfree >= STsize) {
 				// print error message
