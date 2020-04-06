@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
+﻿#define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,8 +8,8 @@
 #define STsize 1000	//size of string table
 #define HTsize 100	//size of hash table
 
-// more define variables��
-typedef struct HTentry *HTpointer;
+// more define variables¡¦
+typedef struct HTentry* HTpointer;
 typedef struct HTentry {
 	int index;		//index of identifier in ST
 	HTpointer next;	//pointer to next identifier
@@ -23,16 +23,17 @@ char seperators[] = " .,;:?!\t\n";
 HTpointer HT[HTsize];
 char ST[STsize];
 
-// more global variables��
+// more global variables¡¦
 ERRORtypes err;
 
-FILE *fp; //to be a pointer to FILE
+FILE* fp; //to be a pointer to FILE
 char input;
 
 int found;
 int nextid;
 int nextfree = 0;
 int hashcode;
+int stidx;
 
 //Initialize - open input file
 void initialize() {
@@ -47,7 +48,7 @@ void PrintHeading() {
 }
 
 int isCharacter() {
-	return ((input >= 'a'&&input <= 'z') || (input >= 'A'&&input <= 'Z') || input == '_') ? 1 : 0;
+	return ((input >= 'a' && input <= 'z') || (input >= 'A' && input <= 'Z') || input == '_') ? 1 : 0;
 }
 
 int isDigit() {
@@ -66,7 +67,11 @@ int isSeperator() {
 void PrintError(ERRORtypes err) {
 	switch (err) {
 	case overst: printf("***Error***		OVERFLOW\n"); break; abort();
-	case illid: printf("***Error***	%c		illegal identifier\n", input); break;
+	case illid: printf("***Error***	");
+		for (int i = nextid; i < nextfree; i++) {
+			printf("%c", ST[i]);
+		}
+		printf("		illegal identifier\n"); break;
 	case illsp: printf("***Error***	%c		illegal seperator\n", input); break;
 	}
 }
@@ -76,7 +81,7 @@ void PrintError(ERRORtypes err) {
 void SkipSeperators() {
 	while (input != EOF) {
 		if (isSeperator()) input = fgetc(fp);
-		else if (!(isDigit() || isCharacter())) PrintError(illsp);
+		else if (!(isDigit() || isCharacter())) { PrintError(illsp); input = fgetc(fp); }
 		else return;
 	}
 }
@@ -108,6 +113,33 @@ void PrintHStable() {
 //		   An identifier is a string of letters and digits, starting with a letter.
 //		   If first letter is digit, print out error message.
 void ReadID() {
+	nextid = nextfree;
+	//첫글자 숫자인 경우 error
+	if (isDigit()) {
+		err = illid;
+	}
+	while (input != EOF && (isCharacter() || isDigit())) {
+
+		//ST사이즈 초과시 에러
+		if (nextfree == STsize) {
+			err = overst;
+			PrintError(overst);
+		}
+		//10글자 초과할 시 
+		if (nextfree - nextid == 10) {
+			break;
+		}
+		//문자나 숫자인 경우 
+		if (input >= 'A' && input <= 'Z')
+			input += 32;
+		ST[nextfree++] = input;
+		input = fgetc(fp);
+	}
+	if (err == illid) {
+		PrintError(err);
+		for (int i = nextid; i < nextfree; i++) ST[i] = '/0';
+		nextfree = nextid;
+	}
 
 }
 
@@ -115,8 +147,7 @@ void ReadID() {
 //			   characters and then taking the sum modulo the size of HT.
 void ComputeHS(int nid, int nfree) {
 	hashcode = 0;
-	for (int i = nid; i < nfree - 1; i++)
-		hashcode += ((ST[i] >= 'A') && (ST[i] <= 'Z')) ? (int)ST[i] + 32 : (int)ST[i];
+	for (int i = nid; i < nfree - 1; i++) hashcode += (int)ST[i];
 	if (hashcode >= HTsize) hashcode %= HTsize;
 }
 
@@ -125,7 +156,29 @@ void ComputeHS(int nid, int nfree) {
 //			  Otherwise flase.
 //			  If find a match, save the starting index of ST in same id.
 void LookupHS(int nid, int hscode) {
-
+	//HT[hashcode] is not nill, search the linked list for identifier
+	HTpointer pt;
+	int curIdx, searchIdx;
+	found = 0;
+	if (HT[hashcode] != NULL) {
+		pt = HT[hashcode];
+		while (pt != NULL && found == 0) {
+			found = 1;
+			curIdx = nid;
+			searchIdx = pt->index;
+			stidx = searchIdx;
+			while (ST[curIdx] != '\0' && ST[searchIdx] != '\0' && found == 1) {
+				if (ST[curIdx] != ST[searchIdx]) {
+					found = 0;
+				}
+				else {
+					curIdx++;
+					searchIdx++;
+				}
+			}
+			pt = pt->next;
+		}
+	}
 }
 
 // ADDHT - Add a new identifier to the hash table.
@@ -133,7 +186,19 @@ void LookupHS(int nid, int hscode) {
 //		   starting index of the identifier in ST.
 //		   IF list head is not a null , it adds a new identifier to the head of the chain
 void ADDHT(int hscode) {
-
+	HTpointer new_entry = (HTpointer)malloc(sizeof(HTentry));
+	new_entry->index = nextid;
+	new_entry->next = NULL;
+	if (HT[hscode] != NULL) {
+		HTpointer temp_p = HT[hscode];
+		while (temp_p->next != NULL) {
+			temp_p = temp_p->next;
+		}
+		temp_p->next = new_entry;
+	}
+	else {
+		HT[hscode] = new_entry;
+	}
 }
 
 /* MAIN - Read the identifier from the file directly into ST.
@@ -158,7 +223,8 @@ int main() {
 		SkipSeperators();
 		ReadID();
 		if (input != EOF && err != illid) {
-			if (nextfree == STsize) {
+
+			if (nextfree >= STsize) {
 				// print error message
 				err = overst;
 				PrintError(err);
@@ -167,14 +233,26 @@ int main() {
 			ComputeHS(nextid, nextfree);
 			LookupHS(nextid, hashcode);
 			if (!found) {
-				// print message
+				printf("%6d                        ", nextid);
+				for (int i = nextid; i < nextfree; i++) {
+					printf("%c", ST[i]);
+				}
+				printf("        (entered)\n");
 				ADDHT(hashcode);
 			}
 			else {
-				// print message
+				printf("%6d                        ", stidx);
+				for (int i = nextid; i < nextfree; i++) {
+					printf("%c", ST[i]);
+				}
+				printf("        (already existed)\n");
+				for (int i = nextid; i < nextfree; i++) ST[i] = '/0';
+				nextfree = nextid;
 			}
 		}
 	}
 	PrintHStable();
 	getchar();
+
+	fclose(fp);
 }
