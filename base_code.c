@@ -137,10 +137,12 @@ void ReadID() {
 			err = overst;
 			PrintError(overst);
 		}
-		//10글자 초과할 시 
+		//10번째인 경우 checkLen = false 
 		if (nextfree - nextid == 10) {
 			checkLen = 0;
 		}
+		//identifier의 길이가 10글자 이하인 경우 ST에 삽입
+		//이때 소문자로 통일하여 삽입 
 		if (checkLen) {
 			if (input >= 'A' && input <= 'Z')
 				input += 32;
@@ -169,14 +171,15 @@ void ComputeHS(int nid, int nfree) {
 //			  Otherwise flase.
 //			  If find a match, save the starting index of ST in same id.
 void LookupHS(int nid, int hscode) {
-	//HT[hashcode] is not nill, search the linked list for identifier
 	HTpointer pt;
 	int curIdx, searchIdx;
 	found = 0;
+	//HT[hashcode]가 null이 아닌경우 
 	if (HT[hashcode] != NULL) {
 		pt = HT[hashcode];
+		//동일한 identifier가 있는지 탐색 
 		while (pt != NULL && found == 0) {
-			found = 1;
+			found = 1; //동일한 identifier 존재
 			curIdx = nid;
 			searchIdx = pt->index;
 			stidx = searchIdx;
@@ -247,6 +250,7 @@ int main() {
 			ComputeHS(nextid, nextfree);
 			LookupHS(nextid, hashcode);
 			printlen = 0;
+			//HT에 없는 경우 
 			if (!found) {
 				printf("%6d				", nextid);
 				for (int i = nextid; i < nextfree; i++) {
@@ -259,6 +263,7 @@ int main() {
 				printf("(entered)\n");
 				ADDHT(hashcode);
 			}
+			//HT에 이미 존재하는 경우 
 			else {
 				printf("%6d                        ", stidx);
 				for (int i = nextid; i < nextfree; i++) {
