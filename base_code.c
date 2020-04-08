@@ -239,12 +239,16 @@ int main() {
 			ST[nextfree++] = '\0';
 			ComputeHS(nextid, nextfree);
 			LookupHS(nextid, hashcode);
+			int printlen = 0;
 			if (!found) {
 				printf("%6d                        ", nextid);
 				for (int i = nextid; i < nextfree; i++) {
 					printf("%c", ST[i]);
 				}
-				printf("        (entered)\n");
+				for (int i = 0; i < 15 - printlen; i++) {
+					printf(" ");
+				}
+				printf("(entered)\n");
 				ADDHT(hashcode);
 			}
 			else {
@@ -252,7 +256,10 @@ int main() {
 				for (int i = nextid; i < nextfree; i++) {
 					printf("%c", ST[i]);
 				}
-				printf("        (already existed)\n");
+				for (int i = 0; i < 15 - printlen; i++) {
+					printf(" ");
+				}
+				printf("(already existed)\n");
 				nextfree = nextid;
 			}
 		}
