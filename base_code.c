@@ -68,7 +68,7 @@ int isSeperator() {
 //				illsp :illegal seperator
 void PrintError(ERRORtypes err) {
 	switch (err) {
-	case overst: printf(" ***Error***		OVERFLOW\n"); break; abort();
+	case overst: printf(" ***Error***		OVERFLOW\n"); PrintHStable(); abort();
 	case illid: printf(" ***Error***			");
 		printlen = 0;
 		for (int i = nextid; i < nextfree; i++) {
