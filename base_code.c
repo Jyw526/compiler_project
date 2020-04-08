@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define FILE_NAME "testdata1.txt"
+#define FILE_NAME "testdata.txt"
 #define STsize 1000	//size of string table
 #define HTsize 100	//size of hash table
 
@@ -145,7 +145,7 @@ void ReadID() {
 	}
 	if (err == illid) {
 		PrintError(err);
-		for (int i = nextid; i < nextfree; i++) ST[i] = '/0';
+		for (int i = nextid; i < nextfree; i++) ST[i] = '\0';
 		nextfree = nextid;
 	}
 
@@ -254,7 +254,7 @@ int main() {
 					printf("%c", ST[i]);
 				}
 				printf("        (already existed)\n");
-				for (int i = nextid; i < nextfree; i++) ST[i] = '/0';
+				for (int i = nextid; i < nextfree; i++) ST[i] = '\0';
 				nextfree = nextid;
 			}
 		}
