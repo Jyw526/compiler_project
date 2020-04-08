@@ -61,6 +61,28 @@ int isSeperator() {
 	return (strchr(seperators, input) == NULL) ? 0 : 1;
 }
 
+// PrintHStable - Prints the hash table.write out the hashcode and the list of identifiers
+//				  associated with each hashcode,but only for non-empty lists.
+//				  Print out the number of characters used up in ST.
+void PrintHStable() {
+	HTpointer ptr;
+	int hidx = 0, sidx = 0;
+
+	printf("\n\n[[ HASH TABLE ]]\n\n");
+
+	for (hidx = 0; hidx < HTsize; hidx++) {
+		if (HT[hidx] != NULL) {
+			printf("Hash Code %3d : ", hidx);
+			for (ptr = HT[hidx]; ptr != NULL; ptr = ptr->next) {
+				sidx = ptr->index;
+				printf("%s ", &ST[sidx]);
+			}
+			printf("\n");
+		}
+	}
+	printf("\n<%d characters are used in the string table>\n", nextfree);
+}
+
 // PrintError - Print out error messages
 //				overst : overflow in ST
 //				print the hashtable and abort by calling the function "abort()".
@@ -95,28 +117,6 @@ void SkipSeperators() {
 		}
 		else return;
 	}
-}
-
-// PrintHStable - Prints the hash table.write out the hashcode and the list of identifiers
-//				  associated with each hashcode,but only for non-empty lists.
-//				  Print out the number of characters used up in ST.
-void PrintHStable() {
-	HTpointer ptr;
-	int hidx = 0, sidx = 0;
-
-	printf("\n\n[[ HASH TABLE ]]\n\n");
-
-	for (hidx = 0; hidx < HTsize; hidx++) {
-		if (HT[hidx] != NULL) {
-			printf("Hash Code %3d : ", hidx);
-			for (ptr = HT[hidx]; ptr != NULL; ptr = ptr->next) {
-				sidx = ptr->index;
-				printf("%s ", &ST[sidx]);
-			}
-			printf("\n");
-		}
-	}
-	printf("\n<%d characters are used in the string table>\n", nextfree);
 }
 
 //ReadIO - Read identifier from the input file the string table ST directly into
