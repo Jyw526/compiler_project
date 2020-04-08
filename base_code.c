@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define FILE_NAME "inputdata1.txt"
+#define FILE_NAME "testdata.txt"
 #define STsize 1000	//size of string table
 #define HTsize 100	//size of hash table
 
@@ -72,7 +72,7 @@ void PrintError(ERRORtypes err) {
 		for (int i = nextid; i < nextfree; i++) {
 			printf("%c", ST[i]);
 		}
-		printf("		illegal identifier\n"); break;
+		printf("		start with digit\n"); break;
 	case illsp: printf("***Error***	%c		illegal seperator\n", input); break;
 	}
 }
@@ -84,7 +84,7 @@ void SkipSeperators() {
 		if (isSeperator()) { input = fgetc(fp); checkLen = 1; }
 		else if (!(isDigit() || isCharacter())) {
 			PrintError(illsp);
-			input = fgetc(fp);
+			input = fgetc(fp); 
 			checkLen = 1;
 		}
 		else return;
@@ -140,12 +140,11 @@ void ReadID() {
 				input += 32;
 			ST[nextfree++] = input;
 		}
-
+		
 		input = fgetc(fp);
 	}
 	if (err == illid) {
 		PrintError(err);
-		for (int i = nextid; i < nextfree; i++) ST[i] = '\0';
 		nextfree = nextid;
 	}
 
@@ -242,10 +241,9 @@ int main() {
 			LookupHS(nextid, hashcode);
 			int printlen = 0;
 			if (!found) {
-				printf("%6d                    ", nextid);
+				printf("%6d                        ", nextid);
 				for (int i = nextid; i < nextfree; i++) {
 					printf("%c", ST[i]);
-					printlen++;
 				}
 				for (int i = 0; i < 15 - printlen; i++) {
 					printf(" ");
@@ -254,16 +252,14 @@ int main() {
 				ADDHT(hashcode);
 			}
 			else {
-				printf("%6d                    ", stidx);
+				printf("%6d                        ", stidx);
 				for (int i = nextid; i < nextfree; i++) {
 					printf("%c", ST[i]);
-					printlen++;
 				}
 				for (int i = 0; i < 15 - printlen; i++) {
 					printf(" ");
 				}
 				printf("(already existed)\n");
-				for (int i = nextid; i < nextfree; i++) ST[i] = '\0';
 				nextfree = nextid;
 			}
 		}
