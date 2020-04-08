@@ -72,7 +72,7 @@ void PrintError(ERRORtypes err) {
 		for (int i = nextid; i < nextfree; i++) {
 			printf("%c", ST[i]);
 		}
-		printf("		illegal identifier\n"); break;
+		printf("		start with digit\n"); break;
 	case illsp: printf("***Error***	%c		illegal seperator\n", input); break;
 	}
 }
@@ -145,7 +145,6 @@ void ReadID() {
 	}
 	if (err == illid) {
 		PrintError(err);
-		for (int i = nextid; i < nextfree; i++) ST[i] = '\0';
 		nextfree = nextid;
 	}
 
@@ -254,7 +253,6 @@ int main() {
 					printf("%c", ST[i]);
 				}
 				printf("        (already existed)\n");
-				for (int i = nextid; i < nextfree; i++) ST[i] = '\0';
 				nextfree = nextid;
 			}
 		}
