@@ -35,6 +35,7 @@ int nextfree = 0;
 int hashcode;
 int stidx;
 int checkLen = 1;
+int printlen;
 
 //Initialize - open input file
 void initialize() {
@@ -67,13 +68,18 @@ int isSeperator() {
 //				illsp :illegal seperator
 void PrintError(ERRORtypes err) {
 	switch (err) {
-	case overst: printf("***Error***		OVERFLOW\n"); break; abort();
-	case illid: printf("***Error***	");
+	case overst: printf(" ***Error***		OVERFLOW\n"); break; abort();
+	case illid: printf(" ***Error***			");
+		printlen = 0;
 		for (int i = nextid; i < nextfree; i++) {
 			printf("%c", ST[i]);
+			printlen++;
 		}
-		printf("		start with digit\n"); break;
-	case illsp: printf("***Error***	%c		illegal seperator\n", input); break;
+		for (int i = 0; i < 15 - printlen; i++) {
+			printf(" ");
+		}
+		printf("	start with digit\n"); break;
+	case illsp: printf(" ***Error***			%c		illegal seperator\n", input); break;
 	}
 }
 
@@ -84,7 +90,7 @@ void SkipSeperators() {
 		if (isSeperator()) { input = fgetc(fp); checkLen = 1; }
 		else if (!(isDigit() || isCharacter())) {
 			PrintError(illsp);
-			input = fgetc(fp); 
+			input = fgetc(fp);
 			checkLen = 1;
 		}
 		else return;
@@ -140,7 +146,7 @@ void ReadID() {
 				input += 32;
 			ST[nextfree++] = input;
 		}
-		
+
 		input = fgetc(fp);
 	}
 	if (err == illid) {
@@ -239,9 +245,9 @@ int main() {
 			ST[nextfree++] = '\0';
 			ComputeHS(nextid, nextfree);
 			LookupHS(nextid, hashcode);
-			int printlen = 0;
+			printlen = 0;
 			if (!found) {
-				printf("%6d                        ", nextid);
+				printf("%6d				", nextid);
 				for (int i = nextid; i < nextfree; i++) {
 					printf("%c", ST[i]);
 					printlen++;
