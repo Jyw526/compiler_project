@@ -244,6 +244,7 @@ int main() {
 				printf("%6d                        ", nextid);
 				for (int i = nextid; i < nextfree; i++) {
 					printf("%c", ST[i]);
+					printlen++;
 				}
 				for (int i = 0; i < 15 - printlen; i++) {
 					printf(" ");
@@ -255,6 +256,7 @@ int main() {
 				printf("%6d                        ", stidx);
 				for (int i = nextid; i < nextfree; i++) {
 					printf("%c", ST[i]);
+					printlen++;
 				}
 				for (int i = 0; i < 15 - printlen; i++) {
 					printf(" ");
