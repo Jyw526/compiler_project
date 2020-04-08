@@ -199,17 +199,18 @@ void LookupHS(int nid, int hscode) {
 //		   starting index of the identifier in ST.
 //		   IF list head is not a null , it adds a new identifier to the head of the chain
 void ADDHT(int hscode) {
+	//새 entry 생성
 	HTpointer new_entry = (HTpointer)malloc(sizeof(HTentry));
 	new_entry->index = nextid;
-	new_entry->next = NULL;
+	//HT[hscode]에 entry있는 경우
 	if (HT[hscode] != NULL) {
-		HTpointer temp_p = HT[hscode];
-		while (temp_p->next != NULL) {
-			temp_p = temp_p->next;
-		}
-		temp_p->next = new_entry;
+		//HT[hscode] 맨 앞에 새로운 entry 삽입
+		new_entry->next=HT[hscode]->next;
+		HT[hscode]->next = new_entry;
 	}
+	//HT[hscode]에 entry없는 경우
 	else {
+		new_entry->next = NULL;
 		HT[hscode] = new_entry;
 	}
 }
