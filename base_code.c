@@ -26,16 +26,16 @@ char ST[STsize];
 // more global variables¡¦
 ERRORtypes err;
 
-FILE* fp; //to be a pointer to FILE
+FILE* fp;			//to be a pointer to FILE
 char input;
 
-int found;
+int found;			//identifier 중복 판단 플래그 변수
 int nextid;
 int nextfree = 0;
 int hashcode;
-int stidx;
-int checkLen = 1;
-int printlen;
+int stidx;			//identifier 중복시 기존 identifier의 ST 인덱스 저장 변수
+int checkLen = 1;	//identifier 길이 판단 플래그 변수
+int printlen;		//identifier 길이 저장 변수(출력시 사용)
 
 //Initialize - open input file
 void initialize() {
@@ -49,14 +49,17 @@ void PrintHeading() {
 	printf("--------------		------------\n");
 }
 
+// isCharacter - 입력된 문자가 알파벳 또는 _(언더바)인지 판단
 int isCharacter() {
 	return ((input >= 'a' && input <= 'z') || (input >= 'A' && input <= 'Z') || input == '_') ? 1 : 0;
 }
 
+// isDigit - 입력된 문자가 숫자인지 판단
 int isDigit() {
 	return (input >= '0' && input <= '9') ? 1 : 0;
 }
 
+//isSeperator - 입력된 문자가 미리 정의된 seperator에 속하는지 판단
 int isSeperator() {
 	return (strchr(seperators, input) == NULL) ? 0 : 1;
 }
@@ -70,8 +73,10 @@ void PrintHStable() {
 
 	printf("\n\n[[ HASH TABLE ]]\n\n");
 
+	// HT의 각 인덱스를 순회하며 해당 인덱스에 리스트가 존재하면 그 리스트의 모든 element를 출력
 	for (hidx = 0; hidx < HTsize; hidx++) {
 		if (HT[hidx] != NULL) {
+			// 해시코드 값 출력 후 해당 인덱스의 identifier 목록을 출력한다.
 			printf("Hash Code %3d : ", hidx);
 			for (ptr = HT[hidx]; ptr != NULL; ptr = ptr->next) {
 				sidx = ptr->index;
@@ -80,6 +85,7 @@ void PrintHStable() {
 			printf("\n");
 		}
 	}
+	// ST에 지금까지 입력된 글자수 출력
 	printf("\n<%d characters are used in the string table>\n", nextfree);
 }
 
@@ -93,13 +99,9 @@ void PrintError(ERRORtypes err) {
 	case overst: printf(" ***Error***		OVERFLOW\n"); PrintHStable(); abort();
 	case illid: printf(" ***Error***			");
 		printlen = 0;
-		for (int i = nextid; i < nextfree; i++) {
-			printf("%c", ST[i]);
-			printlen++;
-		}
-		for (int i = 0; i < 15 - printlen; i++) {
-			printf(" ");
-		}
+		// 출력 포맷을 맞추기 위한 코드
+		for (int i = nextid; i < nextfree; i++, printlen++) printf("%c", ST[i]);
+		for (int i = 0; i < 15 - printlen; i++) printf(" ");
 		printf("	start with digit\n"); break;
 	case illsp: printf(" ***Error***			%c		illegal seperator\n", input); break;
 	}
@@ -109,7 +111,10 @@ void PrintError(ERRORtypes err) {
 //					 if illegal seperators,print out error message.
 void SkipSeperators() {
 	while (input != EOF) {
+		// seperator인 경우 다음 문자를 입력받는다.
+		// checkLen은 후에 각 identifier의 길이를 확인하게 만들기 위한 플래그 변수이다.
 		if (isSeperator()) { input = fgetc(fp); checkLen = 1; }
+		// seperator, digit, character 전부 아닌 경우 illegal seperator가 된다.
 		else if (!(isDigit() || isCharacter())) {
 			PrintError(illsp);
 			input = fgetc(fp);
@@ -162,7 +167,9 @@ void ReadID() {
 //			   characters and then taking the sum modulo the size of HT.
 void ComputeHS(int nid, int nfree) {
 	hashcode = 0;
+	// 입력된 identifier의 각 글자 값을 더해서 hashcode를 계산한다.
 	for (int i = nid; i < nfree - 1; i++) hashcode += (int)ST[i];
+	// HT에 저장해야 하므로 hashcode가 HT의 최대 인덱스보다 큰 경우 modulo 연산으로 인덱스를 계산한다.
 	if (hashcode >= HTsize) hashcode %= HTsize;
 }
 
@@ -208,7 +215,7 @@ void ADDHT(int hscode) {
 	//HT[hscode]에 entry있는 경우
 	if (HT[hscode] != NULL) {
 		//HT[hscode] 맨 앞에 새로운 entry 삽입
-		new_entry->next=HT[hscode]->next;
+		new_entry->next = HT[hscode]->next;
 		HT[hscode]->next = new_entry;
 	}
 	//HT[hscode]에 entry없는 경우
