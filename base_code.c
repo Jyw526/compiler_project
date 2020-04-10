@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
+﻿#define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -159,6 +159,7 @@ void ReadID() {
 	if (err == illid) {
 		PrintError(err);
 		nextfree = nextid;
+		ST[nextid] = '\0';
 	}
 
 }
@@ -246,7 +247,8 @@ int main() {
 		err = noerror;
 		SkipSeperators();
 		ReadID();
-		if (err != illid && (ST[nextid] != 0 || input != EOF)) {
+		// EOF 후 공백 입력 안되게 하기 위해 조건 추가
+		if (err != illid && (ST[nextid] != '\0' || input != EOF)) {
 
 			if (nextfree >= STsize) {
 				// print error message
@@ -272,7 +274,7 @@ int main() {
 			}
 			//HT에 이미 존재하는 경우 
 			else {
-				printf("%6d                        ", stidx);
+				printf("%6d				", stidx);
 				for (int i = nextid; i < nextfree; i++) {
 					printf("%c", ST[i]);
 					printlen++;
@@ -282,6 +284,7 @@ int main() {
 				}
 				printf("(already existed)\n");
 				nextfree = nextid;
+				ST[nextid] = '\0';
 			}
 		}
 	}
