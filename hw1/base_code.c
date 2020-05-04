@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define FILE_NAME "testdata.txt"
+#define FILE_NAME "testdata0_bjs2.txt"
 #define STsize 1000	//size of string table
 #define HTsize 100	//size of hash table
 
@@ -97,13 +97,13 @@ void PrintHStable() {
 void PrintError(ERRORtypes err) {
 	switch (err) {
 	case overst: printf(" ***Error***		OVERFLOW\n"); PrintHStable(); abort();
-	case illid: printf(" ***Error***			");
+	case illid: printf(" ***Error***\t\t  ");
 		printlen = 0;
 		// 출력 포맷을 맞추기 위한 코드
 		for (int i = nextid; i < nextfree; i++, printlen++) printf("%c", ST[i]);
 		for (int i = 0; i < 15 - printlen; i++) printf(" ");
-		printf("	start with digit\n"); break;
-	case illsp: printf(" ***Error***			%c		illegal seperator\n", input); break;
+		printf("  start with digit\n"); break;
+	case illsp: printf(" ***Error***\t\t  %c\t\t  illegal seperator\n", input); break;
 	}
 }
 
@@ -159,6 +159,7 @@ void ReadID() {
 	if (err == illid) {
 		PrintError(err);
 		nextfree = nextid;
+		ST[nextid] = '\0';
 	}
 
 }
@@ -246,7 +247,8 @@ int main() {
 		err = noerror;
 		SkipSeperators();
 		ReadID();
-		if (err != illid && (ST[nextid] != 0 || input != EOF)) {
+		// EOF 후 공백 입력 안되게 하기 위해 조건 추가
+		if (err != illid && (ST[nextid] != '\0' || input != EOF)) {
 
 			if (nextfree >= STsize) {
 				// print error message
@@ -259,7 +261,7 @@ int main() {
 			printlen = 0;
 			//HT에 없는 경우 
 			if (!found) {
-				printf("%6d				", nextid);
+				printf("%6d\t\t\t  ", nextid);
 				for (int i = nextid; i < nextfree; i++) {
 					printf("%c", ST[i]);
 					printlen++;
@@ -272,7 +274,7 @@ int main() {
 			}
 			//HT에 이미 존재하는 경우 
 			else {
-				printf("%6d                        ", stidx);
+				printf("%6d\t\t\t  ", stidx);
 				for (int i = nextid; i < nextfree; i++) {
 					printf("%c", ST[i]);
 					printlen++;
@@ -282,6 +284,7 @@ int main() {
 				}
 				printf("(already existed)\n");
 				nextfree = nextid;
+				ST[nextid] = '\0';
 			}
 		}
 	}
