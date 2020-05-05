@@ -1,0 +1,17 @@
+
+Debug/compiler_project.log
+*.db
+.vs/compiler_project/v16/.suo
+*.opendb
+*.ipch
+*.sln
+*.vcxproj
+Debug/base_code.obj
+compiler_project.vcxproj.filters
+compiler_project.vcxproj.user
+Debug/compiler_project.tlog/CL.command.1.tlog
+Debug/compiler_project.tlog/CL.read.1.tlog
+Debug/compiler_project.tlog/CL.write.1.tlog
+Debug/compiler_project.tlog/compiler_project.lastbuildstate
+Debug/compiler_project.tlog/unsuccessfulbuild
+Debug/vc142.pdb
