@@ -1,26 +1,32 @@
 /*
- * main.c - ∞¢ tokenø° ¥Î«— √‚∑¬
- * programmer - πÈ¡ˆºˆ,º€¡÷¿∫,¡§ø¨øÏ
+ * main.c - Í∞Å tokenÏóê ÎåÄÌïú Ï∂úÎ†•
+ * programmer - Î∞±ÏßÄÏàò,ÏÜ°Ï£ºÏùÄ,Ï†ïÏó∞Ïö∞
  * date - 05/04/2020
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include "tn.h"
+
 extern yylex();
 extern char *yytext;
+extern line; 
+extern st_idx;
 
 int cErrors =0;
+
+void printToken(enum token tt);
 
 void main(){
     enum token tt;
     //print header
     printf("Line number\tToken type\tST-index\tToken\n");
-    printf("---------------------------------------------------\n");
+    printf("----------------------------------------------------------\n");
 
     //call yylex()
-    while((tt=yylex()) != EOF) {
-       	printtoken(tt);
+    while((tt=yylex()) != TEOF) {
+        printf("\t%d\t",line);
+       	printToken(tt);
 	}
 
     //report error
@@ -32,56 +38,61 @@ void main(){
 }
 
 /*
-*printtoken() - token type ∫∞∑Œ √‚∑¬
+*printtoken() - token type Î≥ÑÎ°ú Ï∂úÎ†•
 */
-void printtoken(enum token tt){
+void printToken(enum token tt){
     switch (tt){
-		case TCONST: printf("TCONST"); break;
-        case TELSE: printf("TELSE"); break;
-		case TIF : printf("TIF"); break;
-        case TINT : printf("TINT"); break;
-        case TRETURN : printf("TRETURN"); break;
-        case TVOID : printf("TVOID"); break;
-        case TWHILE : printf("TWHILE"); break;
+		case TCONST: printf("TCONST\t"); break;
+        case TELSE: printf("TELSE\t"); break;
+		case TIF : printf("TIF\t"); break;
+        case TINT : printf("TINT\t"); break;
+        case TRETURN : printf("TRETURN\t"); break;
+        case TVOID : printf("TVOID\t"); break;
+        case TWHILE : printf("TWHIL\tE"); break;
 
-        case TPLUS : printf("TPLUS"); break;
-        case TMINUS : printf("TMINUS"); break;
-        case TSTAR : printf("TSTAR"); break;
-        case TSLASH : printf("TSLASH"); break;
-        case TMOD : printf("TMOD"); break;
+        case TPLUS : printf("TPLUS\t"); break;
+        case TMINUS : printf("TMINUS\t"); break;
+        case TSTAR : printf("TSTAR\t"); break;
+        case TSLASH : printf("TSLASH\t"); break;
+        case TMOD : printf("TMOD\t"); break;
 
-        case TASSIGN : printf("TASSIGN"); break;
+        case TASSIGN : printf("TASSIGN\t"); break;
         case TADDASSIGN : printf("TADDASSIGN"); break;
         case TSUBASSIGN :printf("TSUBASSIGN"); break;
         case TDIVASSIGN : printf("TDIVASSIGN"); break;
         case TMODASSIGN : printf("TMODASSIGN"); break;
 
-        case TNOT : printf("TNOT"); break;
-        case TAND : printf("TAND"); break;
-        case TOR : printf("TOR"); break;
+        case TNOT : printf("TNOT\t"); break;
+        case TAND : printf("TAND\t"); break;
+        case TOR : printf("TOR\t"); break;
 
-        case TEQUAL : printf("TEQUAL"); break;
-        case TNOTEQU : printf("TNOTEQU"); break;
-        case TLESS : printf("TLESS"); break;
-        case TGREAT : printf("TGREAT"); break;
-        case TLESSE : printf("TLESSE"); break;
-        case TGREATE : printf("TGREATE"); break;
+        case TEQUAL : printf("TEQUAL\t"); break;
+        case TNOTEQU : printf("TNOTEQU\t"); break;
+        case TLESS : printf("TLESS\t"); break;
+        case TGREAT : printf("TGREAT\t"); break;
+        case TLESSE : printf("TLESSE\t"); break;
+        case TGREATE : printf("TGREATE\t"); break;
         
-        case TINC : printf("TINC"); break;
-        case TDEC : printf("TDEC"); break;
+        case TINC : printf("TINC\t"); break;
+        case TDEC : printf("TDEC\t"); break;
 
-        case TBROPEN : printf("TBROPEN"); break;
+        case TBROPEN : printf("TBROPEN\t"); break;
         case TBRCLOSE : printf("TBRCLOSE"); break;
-        case TCOMMA : printf("TCOMMA"); break;
+        case TCOMMA : printf("TCOMMA\t"); break;
         case TCURLOPEN : printf("TCURLOPEN"); break;
         case TCURLCLOSE : printf("TCURLCLOSE"); break;
         case TSQUOPEN : printf("TSQUOPEN"); break;
         case TSQUCLOSE : printf("TSQUCLOSE"); break;
-        case TSEMI : printf("TSEMI"); break;
+        case TSEMI : printf("TSEMI\t"); break;
 
-        case TIDENT :printf("TIDENT"); break;
-        case TNUMBER : printf("TNUMBER"); break;
+        case TIDENT :printf("TIDENT"); break; 
+        case TNUMBER : printf("TNUMBER\t"); break;
         case TRNUMBER : printf("TRNUMBER");
         }
-        printf("\t\t%s\n",yytext);
+        if(tt == TIDENT){ //identifierÏù∏ Í≤ΩÏö∞ st-index Ï∂úÎ†•
+            printf("\t\t%d\t\t%s\n",st_idx,yytext);
+        }
+        else{
+            printf("\t\t\t%s\n",yytext);
+        }
 }

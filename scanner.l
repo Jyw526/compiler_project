@@ -1,11 +1,17 @@
 %{
 /* scanner.l - lexical analyzer for the MiniC
- * programmer ? ¹éÁö¼ö, ¼ÛÁÖÀº, Á¤¿¬¿ì
- * date ? 05/04/2020
+ * programmer ë°±ì§€ìˆ˜, ì†¡ì£¼ì€, ì •ì—°ìš°
+ * date  05/04/2020
  */
 #include <stdio.h>
 #include <stdlib.h>
 #include "tn.h"
+
+extern int SymbolTable();
+int line=1; //token line number
+int st_idx=-1; //st index (default=-1)
+
+int symbolTManagement();
 %}
 %%
 "const"						return(TCONST);
@@ -52,21 +58,21 @@
 "]"							return(TSQUCLOSE);
 ";"							return(TSEMI);
 
-[A-Za-z_][A-Za-z0-9_]*		return(TIDENT); //symbolTManagement() È£Ãâ ÇÊ¿ä
+[A-Za-z_][A-Za-z0-9_]*		st_idx=symbolTManagement(); return(TIDENT); //symbolTManagement() 
 [1-9][0-9]*					return(TNUMBER);
 [0-9]+"."[0-9]+				return(TRNUMBER);
 
 "/*"([^*]|\*+[^*/])*\**"*/" ;
-"//".* ;
-[ \t\n] ;
-. return(yytext[0]);
+"//".*                      ;
+[ \t]                       ;
+"\n"                        line++;
+.                           return(yytext[0]);
 %%
 
 /*ident matching*/
-/*int symbolTManagement(){
-    return SymbolTable(yytext);
-}
-*/ 
+int symbolTManagement(){
+    return SymbolTable();
+} 
 
 int yywrap(){
 	return 1;
