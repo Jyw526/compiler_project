@@ -7,9 +7,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "tn.h"
+#include "glob.h"
 
 extern yylex();
-extern char *yytext;
+//extern char *yytext;
 extern line; 
 extern st_idx;
 
@@ -87,12 +88,17 @@ void printToken(enum token tt){
 
         case TIDENT :printf("TIDENT"); break; 
         case TNUMBER : printf("TNUMBER\t"); break;
-        case TRNUMBER : printf("TRNUMBER");
+        case TRNUMBER: printf("TRNUMBER"); break;
+
+        //에러
+        case TILLICHAR: reportError(ILLICHAR); break;
+        case TILLIDENT: reportError(ILLIDENT); break;
+
         }
         if(tt == TIDENT){ //identifier인 경우 st-index 출력
             printf("\t\t%d\t\t%s\n",st_idx,yytext);
         }
-        else{
+        else if(tt != TILLICHAR && tt!= TILLIDENT){
             printf("\t\t\t%s\n",yytext);
         }
 }
