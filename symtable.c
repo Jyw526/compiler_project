@@ -6,14 +6,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "tn.h"
+#include "glob.h"
 
 #define STsize 1000	//size of string table
 #define HTsize 100	//size of hash table
 #define maxLen 10 //identifier 유효 글자수
-#define MIN(a,b) (((a)<(b))?(a):(b))
-
-extern char* yytext; 
-extern int yyleng;
+#define MIN(a,b) (a<b)?a:b;
 
 typedef struct HTentry* HTpointer;
 typedef struct HTentry {

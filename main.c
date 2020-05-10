@@ -1,5 +1,4 @@
-/*
- * main.c - 각 token에 대한 출력
+/* main.c - 각 token에 대한 출력
  * programmer - 백지수,송주은,정연우
  * date - 05/04/2020
  */
@@ -8,13 +7,6 @@
 #include <stdlib.h>
 #include "tn.h"
 #include "glob.h"
-
-extern yylex();
-//extern char *yytext;
-extern line; 
-extern st_idx;
-
-int cErrors =0;
 
 void printToken(enum token tt);
 

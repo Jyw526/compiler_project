@@ -6,8 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "tn.h"
+#include "glob.h"
 
-extern int SymbolTable();
 int line=1; //token line number
 int st_idx=-1; //st index (default=-1)
 
