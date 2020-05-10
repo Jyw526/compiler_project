@@ -38,7 +38,14 @@ void ReadID() {
 	//identifier의 유효길이는 최대 maxLen을 따른다
     min_i = MIN(yyleng,maxLen);
 	for(int i=0; i<min_i; i++){
-        input = yytext[i];
+	        input = yytext[i];
+		//ST사이즈 초과시 에러
+		if (nextfree == STsize) {
+            		//error 관리 추가
+			//err = overst;
+			//PrintError(overst);
+		}
+		//소문자로 통일하여 삽입
 		if (input >= 'A' && input <= 'Z') input += 32;
 		ST[nextfree++] = input;
 	}
