@@ -1,6 +1,6 @@
 #pragma once
 /* glob.h - global variable for the project
- * programmer ¹éÁö¼ö, ¼ÛÁÖÀº, Á¤¿¬¿ì
+ * programmer ë°±ì§€ìˆ˜, ì†¡ì£¼ì€, ì •ì—°ìš°
  * date 05/07/2020
  */
 
