@@ -1,5 +1,6 @@
 #pragma once
-/* tn.h - token type
+/*
+ * tn.h - token type
  * progrmmer 백지수, 송주은, 정연우
  * date - 05/04/2020
  */

@@ -1,17 +1,18 @@
 #pragma once
 /* glob.h - global variable for the project
- * programmer ë°±ì§€ìˆ˜, ì†¡ì£¼ì€, ì •ì—°ìš°
+ * programmer ¹éÁö¼ö, ¼ÛÁÖÀº, Á¤¿¬¿ì
  * date 05/07/2020
  */
- 
+
 enum errorTypes { ILLICHAR, ILLIDENT };
 typedef enum errorTypes ERRORtypes;
 
-int cErrors = 0;
-int line = 1; //token line number
-int st_idx = -1; //st index (default=-1)
-
+int nextid;
 extern yylex();
+extern int cErrors;
+extern int line;
+extern int st_idx;
+extern char* yytext;
 extern int yyleng;
 extern void reportError(ERRORtypes err);
 extern char* yytext;
