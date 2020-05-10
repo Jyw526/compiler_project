@@ -1,5 +1,5 @@
-/* ReportError.c - ê° errorì— ëŒ€í•œ ì¶œë ¥
- * programmer - ë°±ì§€ìˆ˜,ì†¡ì£¼ì€,ì •ì—°ìš°
+/* ReportError.c - °¢ error¿¡ ´ëÇÑ Ãâ·Â
+ * programmer - ¹éÁö¼ö,¼ÛÁÖÀº,Á¤¿¬¿ì
  * date - 05/04/2020
  */
 

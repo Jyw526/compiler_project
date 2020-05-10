@@ -11,7 +11,7 @@
 #define STsize 1000	//size of string table
 #define HTsize 100	//size of hash table
 #define maxLen 10 //identifier 유효 글자수
-#define MIN(a,b) (a<b)?a:b;
+#define MIN(a,b) (((a)<(b))?(a):(b))
 
 typedef struct HTentry* HTpointer;
 typedef struct HTentry {
@@ -24,7 +24,7 @@ char ST[STsize];
 
 char input;
 int found;			//identifier 중복 판단 플래그 변수
-int nextid;
+extern int nextid;
 int nextfree = 0;
 int hashcode;
 int stidx;			//identifier 중복시 기존 identifier의 ST 인덱스 저장 변수
@@ -32,22 +32,22 @@ int stidx;			//identifier 중복시 기존 identifier의 ST 인덱스 저장 변
 //ReadIO - Read identifier directly into ST(append it to the previous identifier).
 //		   An identifier is a string of letters and digits, starting with a letter.
 void ReadID() {
+	int min_i = yyleng;
 	nextid = nextfree;
 
 	//identifier의 유효길이는 최대 maxLen을 따른다
-    int min_i = MIN(yyleng,maxLen);
+    min_i = MIN(yyleng,maxLen);
 	for(int i=0; i<min_i; i++){
-        input = yytext[i];
+	        input = yytext[i];
 		//ST사이즈 초과시 에러
 		if (nextfree == STsize) {
-            //error 관리 추가
+            		//error 관리 추가
 			//err = overst;
 			//PrintError(overst);
 		}
 		//소문자로 통일하여 삽입
-		if (input >= 'A' && input <= 'Z')
-			input += 32;
-		ST[nextfree++] = input;	
+		if (input >= 'A' && input <= 'Z') input += 32;
+		ST[nextfree++] = input;
 	}
 
 }

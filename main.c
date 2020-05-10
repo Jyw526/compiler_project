@@ -8,6 +8,8 @@
 #include "tn.h"
 #include "glob.h"
 
+int cErrors =0;
+
 void printToken(enum token tt);
 
 void main(){
