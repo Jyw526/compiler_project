@@ -1,5 +1,5 @@
-/* ReportError.c - °¢ error¿¡ ´ëÇÑ Ãâ·Â
- * programmer - ¹éÁö¼ö,¼ÛÁÖÀº,Á¤¿¬¿ì
+/* ReportError.c - ê° errorì— ëŒ€í•œ ì¶œë ¥
+ * programmer - ë°±ì§€ìˆ˜,ì†¡ì£¼ì€,ì •ì—°ìš°
  * date - 05/04/2020
  */
 
@@ -8,16 +8,19 @@
 #include "tn.h"
 #include "glob.h"
 
+void yyerror(char* s)
+{
+	printf("%s\n", s);
+}
 void reportError(ERRORtypes err) {
 	switch (err) {
-	case ILLICHAR :
-		printf("**Error**\t\t\t%s Illegal Character\n",yytext);
+	case ILLICHAR:
+		printf("**Error**\t\t\t%s Illegal Character\n", yytext);
 		cErrors++;
 		break;
-	case ILLIDENT :
-		printf("**Error**\t\t\t%s Illegal IDENT\n",yytext);
+	case ILLIDENT:
+		printf("**Error**\t\t\t%s Illegal IDENT\n", yytext);
 		cErrors++;
 		break;
 	}
-	
 }
