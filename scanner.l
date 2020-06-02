@@ -67,8 +67,7 @@ int symbolTManagement();
 [ \t]                       ;
 "\n"                        line++;
 .			return(TILLICHAR);
-[0-9]+[^0-9\n\t\40";"]+		return(TILLIDENT);
-[^0-9\n\t\40";"]+[0-9]*[^0-9\n\t\40";"]* return(TILLIDENT);
+[0-9]+[A-Za-z_][A-Za-z0-9_]*		return(TILLIDENT);
 %%
 
 /*ident matching*/
