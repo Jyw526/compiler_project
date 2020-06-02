@@ -75,7 +75,6 @@ type_specifier	: TINT  { type_int=1;} /* type:integer */
 		| TINT { look_tmp->itype = tint; }
 		| TVOID { look_tmp->itype = tvoid; }
 		| TFLOAT { look_tmp->itype = tfloat; }
-		| TCHAR { look_tmp->itype = tchar; }
 		*/
 		;
 function_name	: TIDENT
@@ -172,7 +171,6 @@ declarator	: TIDENT
 				if( look_tmp->itype==tint ) look_id->itype = tint;
 				else if( look_tmp->itype==tvoid ) look_id->itype = tvoid;
 				else if( look_tmp->itype==tfloat ) look_id->itype = tfloat;
-				else if( look_tmp->itype==tchar ) look_id->itype = tchar;						
 			}
 			//look_tmp = look_id;
 			*/
@@ -189,7 +187,6 @@ declarator	: TIDENT
 				if( look_tmp->itype==tint ) look_id->itype = tint;
 				else if( look_tmp->itype==tvoid ) look_id->itype = tvoid;
 				else if( look_tmp->itype==tfloat ) look_id->itype = tfloat;
-				else if( look_tmp->itype==tchar ) look_id->itype = tchar;
 			}
 			//look_tmp = look_id;
 			*/
