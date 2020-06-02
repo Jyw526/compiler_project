@@ -13,9 +13,14 @@
 #define maxLen 10 //identifier 유효 글자수
 #define MIN(a,b) (((a)<(b))?(a):(b))
 
+//identifier type
+enum id_type {parse_error, void_function, int_function, float_function, int_scalar, float_scalar, int_array, float_array };
+
 typedef struct HTentry* HTpointer;
 typedef struct HTentry {
 	int index;		//index of identifier in ST
+	int line_num;		//line number of identifier in input string
+	int type;       //type of identifier
 	HTpointer next;	//pointer to next identifier
 } HTentry;
 
@@ -101,6 +106,8 @@ void ADDHT(int hscode) {
 	//새 entry 생성
 	HTpointer new_entry = (HTpointer)malloc(sizeof(HTentry));
 	new_entry->index = nextid;
+	new_entry->line_num = line;
+	new_entry->type = 0; //default
 	//HT[hscode]에 entry있는 경우
 	if (HT[hscode] != NULL) {
 		//HT[hscode] 맨 앞에 새로운 entry 삽입
@@ -113,6 +120,53 @@ void ADDHT(int hscode) {
 		HT[hscode] = new_entry;
 	}
 }
+
+// PrintHStable - Prints the hash table.write out the hashcode and the list of identifiers
+//				  associated with each hashcode,but only for non-empty lists.
+//				  Print out the number of characters used up in ST.
+void PrintHStable() {
+	HTpointer ptr;
+	int hidx = 0, sidx = 0;
+
+	printf("\n\n[[ HASH TABLE ]]\n\n");
+
+	// HT의 각 인덱스를 순회하며 해당 인덱스에 리스트가 존재하면 그 리스트의 모든 element를 출력
+	for (hidx = 0; hidx < HTsize; hidx++) {
+		if (HT[hidx] != NULL) {
+			// 해시코드 값 출력 후 해당 인덱스의 identifier 목록을 출력한다.
+			printf("Hash Code %3d : ", hidx);
+			for (ptr = HT[hidx]; ptr != NULL; ptr = ptr->next) {
+				sidx = ptr->index;
+				//identifier (variable type, line num) 출력
+				switch(ptr->type){
+					case parse_error: //error
+					case void_function: printf("\t %s (function name, return type = void, line%d) \t", &ST[sidx],ptr->line_num); break;
+					case int_function: printf("\t %s (function name, return type = int, line%d) \t", &ST[sidx],ptr->line_num); break;
+					case float_function: printf("\t %s (function name, return type = float, line%d) \t", &ST[sidx],ptr->line_num); break;
+					case int_scalar: printf("\t %s (integer scalar variable, line%d) \t", &ST[sidx],ptr->line_num); break;
+					case float_scalar: printf("\t %s (float scalar variable, line%d) \t", &ST[sidx],ptr->line_num); break;
+					case int_array: printf("\t %s (integer array variable, line%d) \t", &ST[sidx],ptr->line_num); break;
+					case float_array: printf("\t %s (float array variable, line%d) \t", &ST[sidx],ptr->line_num); break;
+				}
+					
+				
+			}
+			printf("\n");
+		}
+	}
+	// ST에 지금까지 입력된 글자수 출력
+	printf("\n<%d characters are used in the string table>\n", nextfree);
+}
+
+// UpdateHT - 해시테이블의 id type을 parser에서 classify해준 type으로 업데이트한다.
+/*
+void UpdateHT(int classified_type){
+	//토큰 하나 스캐닝하고 parsing 할 경우에는
+	//어차피 맨 앞에 있는 id type이 최근 것이므로 
+	//next, hashcode 계산할 필요없음 (현재 저장된 hashcode가 보고 있는 토큰일테니까..?)
+	HT[hashcode]->type = classified_type;
+}
+*/
 
 // SymbolTableManagement
 int SymbolTable(){
