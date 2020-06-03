@@ -18,6 +18,7 @@ int symbolTManagement();
 "else"						return(TELSE);
 "if"						return(TIF);
 "int"						return(TINT);
+"float"                     return(TFLOAT);
 "return"					return(TRETURN);
 "void"						return(TVOID);
 "while"						return(TWHILE);
