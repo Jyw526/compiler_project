@@ -9,6 +9,7 @@ typedef enum errorTypes ERRORtypes;
 
 int nextid;
 extern yylex();
+extern yyerrok();
 extern int cErrors;
 extern int line;
 extern int st_idx;
@@ -17,3 +18,4 @@ extern int yyleng;
 extern void reportError(ERRORtypes err);
 extern char* yytext;
 extern int SymbolTable();
+extern void PrintHStable();
