@@ -48,13 +48,10 @@ function_def	: function_header compound_st
 			yyerrok;
 			/* error - wrong function definition */
 			reportError(wrong_funcdef);
-			/*
-			reportError(nosemi);
-			*/
 		}
 		;
 function_header	: dcl_spec function_name formal_param
-		| dcl_spec formal_param
+		| dcl_spec error formal_param
 		{
 			yyerrok;
 			reportError(wrong_funcdef);
@@ -81,11 +78,15 @@ function_name	: TIDENT
 				vtype = 0;  /*function name*/
 				tmp=vtype+itype;
 				cur_ID->type=tmp;
-
 			}
 		}
 		;
 formal_param	: TBROPEN opt_formal_param TBRCLOSE
+		| TBROPEN opt_formal_param error
+		{
+			yyerrok;
+			reportError(nobracket);
+		}
 		;
 opt_formal_param	: formal_param_list
 			|
@@ -95,16 +96,21 @@ formal_param_list	: param_dcl
 			| formal_param_list param_dcl
 			{
 				yyerrok;
-				reportError(wrong_param);
+//				reportError(nocomma);
 			}
 			;
 param_dcl	: dcl_spec declarator
+		| dcl_spec error
+		{
+			yyerrok;
+//			reportError(wrong_def);
+		}
 		;
 compound_st	: TCURLOPEN opt_dcl_list opt_stat_list TCURLCLOSE
 		| TCURLOPEN opt_dcl_list opt_stat_list error
 		{
 			yyerrok;
-			reportError(nobrace);
+			reportError(nobracket);
 		}
 		;
 opt_dcl_list	: declaration_list
@@ -126,6 +132,11 @@ declaration	: dcl_spec init_dcl_list TSEMI
 			itype=0;
 			vtype=0;
 			reportError(nosemi);
+		}
+		| dcl_spec error
+		{
+			yyerrok;
+//			reportError(wrong_def);
 		}
 		;
 init_dcl_list	: init_declarator
@@ -157,6 +168,7 @@ declarator	: TIDENT
 		;
 opt_number	: TNUMBER
 		| TRNUMBER
+		| TIDENT
 		|
 		;
 opt_stat_list	: statement_list
@@ -184,8 +196,28 @@ opt_expression	: expression
 		;
 if_st	: TIF TBROPEN expression TBRCLOSE statement %prec LOWER_THAN_ELSE
 	| TIF TBROPEN expression TBRCLOSE statement TELSE statement
+	| TIF error
+	{
+		yyerrok;
+		reportError(nobracket);
+	}
+	| TIF TBROPEN expression error
+	{
+		yyerrok;
+		reportError(nobracket);
+	}
 	;
 while_st	: TWHILE TBROPEN expression TBRCLOSE statement
+		| TWHILE error
+		{
+			yyerrok;
+			reportError(nobracket);
+		}
+		| TWHILE TBROPEN expression error
+		{
+			yyerrok;
+			reportError(nobracket);
+		}
 		;
 return_st	: TRETURN opt_expression TSEMI
 		;
@@ -238,6 +270,11 @@ postfix_exp	: primary_exp
 			reportError(nobracket);
 		}
 		| postfix_exp TBROPEN opt_actual_param TBRCLOSE
+		| postfix_exp TBROPEN opt_actual_param error
+		{
+			yyerrok;
+			reportError(nobracket);
+		}
 		| postfix_exp TINC
 		| postfix_exp TDEC
 		;
@@ -253,5 +290,10 @@ primary_exp	: TIDENT
 		| TNUMBER
 		| TRNUMBER
 		| TBROPEN expression TBRCLOSE
+		| TBROPEN expression error
+		{
+			yyerrok;
+			reportError(nobracket);
+		}
 		;
 %%
