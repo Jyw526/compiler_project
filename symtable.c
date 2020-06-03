@@ -1,6 +1,6 @@
 /* symtable.c - hash symbol table
  * programmer 백지수, 송주은, 정연우
- * date 05/07/2020
+ * date 06/04/2020
  */
 
 #include <stdio.h>
@@ -130,12 +130,14 @@ void PrintHStable() {
 				sidx = ptr->index;
 				//identifier (variable type, line num) 출력
 				switch(ptr->type){
-					//case parse_error: 
+					case parse_error: printf("\t %s (not defined, line %d) \t", &ST[sidx],ptr->line_num); break; 
 					case void_function: printf("\t %s (function name, return type = void, line%d) \t", &ST[sidx],ptr->line_num); break;
 					case int_function: printf("\t %s (function name, return type = int, line%d) \t", &ST[sidx],ptr->line_num); break;
 					case float_function: printf("\t %s (function name, return type = float, line%d) \t", &ST[sidx],ptr->line_num); break;
+					case void_scalar: printf("\t %s (void scalar variable, line%d) \t", &ST[sidx],ptr->line_num); break;
 					case int_scalar: printf("\t %s (integer scalar variable, line%d) \t", &ST[sidx],ptr->line_num); break;
 					case float_scalar: printf("\t %s (float scalar variable, line%d) \t", &ST[sidx],ptr->line_num); break;
+					case void_array:  printf("\t %s (void array variable, line%d) \t", &ST[sidx],ptr->line_num); break;
 					case int_array: printf("\t %s (integer array variable, line%d) \t", &ST[sidx],ptr->line_num); break;
 					case float_array: printf("\t %s (float array variable, line%d) \t", &ST[sidx],ptr->line_num); break;
 				}
@@ -148,16 +150,6 @@ void PrintHStable() {
 	// ST에 지금까지 입력된 글자수 출력
 	printf("\n<%d characters are used in the string table>\n", nextfree);
 }
-
-// UpdateHT - 해시테이블의 id type을 parser에서 classify해준 type으로 업데이트한다.
-/*
-void UpdateHT(int classified_type){
-	//토큰 하나 스캐닝하고 parsing 할 경우에는
-	//어차피 맨 앞에 있는 id type이 최근 것이므로 
-	//next, hashcode 계산할 필요없음 (현재 저장된 hashcode가 보고 있는 토큰일테니까..?)
-	HT[hashcode]->type = classified_type;
-}
-*/
 
 // SymbolTableManagement
 int SymbolTable(){

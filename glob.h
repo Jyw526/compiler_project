@@ -1,7 +1,7 @@
 #pragma once
 /* glob.h - global variable for the project
  * programmer 백지수, 송주은, 정연우
- * date 05/07/2020
+ * date 06/04/2020
  */
 
 #define STsize 1000	//size of string table
@@ -10,7 +10,7 @@
 enum errorTypes { ILLICHAR, ILLIDENT, wrong_st, wrong_param, wrong_funcdef, nobrace, nosemi, nobracket}; //parse error 추가해야함
 typedef enum errorTypes ERRORtypes;
 //identifier type
-enum id_type { parse_error, void_function, int_function, float_function, void_scalar, int_scalar, float_scalar, voic_array, int_array, float_array };
+enum id_type { parse_error, void_function, int_function, float_function, void_scalar, int_scalar, float_scalar, void_array, int_array, float_array };
 
 typedef struct HTentry* HTpointer;
 typedef struct HTentry {
