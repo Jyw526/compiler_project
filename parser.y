@@ -137,16 +137,15 @@ init_declarator	: declarator
 		;
 declarator	: TIDENT
 		{
-			if(cur_ID->type==parse_error){ /* 현재 identifier가 type field를 가리키면*/
-				vtype=3;
-				tmp=itype+vtype;
-				cur_ID->type=tmp;
-			}
+			vtype=3;
+			tmp=itype+vtype;
+			cur_ID->type=tmp;
 		}
 		| TIDENT TSQUOPEN opt_number TSQUCLOSE
 		{
 			if(cur_ID->type==parse_error){   /* 현재 identifier가 type field를 가리키면 */
 				vtype=6;
+				printf("\n%d %d\n", itype, vtype);
 				tmp=itype+vtype;
 				cur_ID->type=tmp;
 			}
