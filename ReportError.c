@@ -15,11 +15,11 @@ void yyerror(char* s)
 void reportError(ERRORtypes err) {
 	switch (err) {
 	case ILLICHAR:
-		printf("**Error**\t\t\t%s Illegal Character\n", yytext);
+		printf("%d\t\t\t%s Illegal Character\n", line, yytext);
 		cErrors++;
 		break;
 	case ILLIDENT:
-		printf("**Error**\t\t\t%s Illegal IDENT\n", yytext);
+		printf("%d\t\t\t%s Illegal IDENT\n", line, yytext);
 		cErrors++;
 		break;
 	}
