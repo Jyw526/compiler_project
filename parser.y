@@ -77,7 +77,7 @@ type_specifier	: TINT { itype = 2; }
 function_name	: TIDENT
 		{
 			/* identifier about parse error or not defined identifier/function */
-			if(cur_ID->parse_error){
+			if(cur_ID->type == parse_error){
 				vtype = 0;  /*function name*/
 				tmp = cur_ID;
 				tmp->type=vtype+itype;
