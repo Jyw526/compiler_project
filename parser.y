@@ -41,7 +41,7 @@ function_def	: function_header compound_st
 		{
 			/* 에러발생시 type 수정을 위해 default값 '0' 세팅 */
 			/* identifier about parse error */
-			tmp=look_id;
+			tmp=cur_ID;
 			tmp->type=parse_error;
 			itype=0;
 			vtype=0;
@@ -77,9 +77,9 @@ type_specifier	: TINT { itype = 2; }
 function_name	: TIDENT
 		{
 			/* identifier about parse error or not defined identifier/function */
-			if(look_id->parse_error){
+			if(cur_ID->parse_error){
 				vtype = 0;  /*function name*/
-				tmp = look_id;
+				tmp = cur_ID;
 				tmp->type=vtype+itype;
 			}
 		}
@@ -121,7 +121,7 @@ declaration	: dcl_spec init_dcl_list TSEMI
 		{
 			tmp->type=parse_error; /*identifier about parse error*/
 			yyerrok;
-			tmp = look_id;
+			tmp = cur_ID;
 			itype=0;
 			vtype=0;
 			reportError(nosemi);
@@ -136,18 +136,18 @@ init_declarator	: declarator
 		;
 declarator	: TIDENT
 		{
-			if(look_id->type==parse_error){ /* 현재 identifier가 type field를 가리키면*/
+			if(cur_ID->type==parse_error){ /* 현재 identifier가 type field를 가리키면*/
 				vtype=3;
 				tmp->type=itype+vtype;
-				tmp=look_id;
+				tmp=cur_ID;
 			}
 		}
 		| TIDENT TSQUOPEN opt_number TSQUCLOSE
 		{
-			if(look_id->type==parse_error){   /* 현재 identifier가 type field를 가리키면 */
+			if(cur_ID->type==parse_error){   /* 현재 identifier가 type field를 가리키면 */
 				vtype=6;
 				tmp->type=itype+vtype;
-				tmp=look_id;
+				tmp=cur_ID;
 			}
 		}
 		| TIDENT TSQUOPEN opt_number error
