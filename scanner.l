@@ -60,7 +60,7 @@ int symbolTManagement();
 ";"							return(TSEMI);
 
 [A-Za-z_][A-Za-z0-9_]*		st_idx=symbolTManagement(); return(TIDENT); //symbolTManagement() 
-[1-9][0-9]*					return(TNUMBER);
+[0-9]|([1-9][0-9]*)					return(TNUMBER);
 [0-9]+"."[0-9]+				return(TRNUMBER);
 
 "/*"([^*]|\*+[^*/])*\**"*/" ;
