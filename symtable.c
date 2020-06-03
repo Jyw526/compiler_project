@@ -8,21 +8,8 @@
 #include "tn.h"
 #include "glob.h"
 
-#define STsize 1000	//size of string table
-#define HTsize 100	//size of hash table
 #define maxLen 10 //identifier 유효 글자수
 #define MIN(a,b) (((a)<(b))?(a):(b))
-
-//identifier type
-enum id_type {parse_error, void_function, int_function, float_function, int_scalar, float_scalar, int_array, float_array };
-
-typedef struct HTentry* HTpointer;
-typedef struct HTentry {
-	int index;		//index of identifier in ST
-	int line_num;		//line number of identifier in input string
-	int type;       //type of identifier
-	HTpointer next;	//pointer to next identifier
-} HTentry;
 
 HTpointer HT[HTsize];
 char ST[STsize];
@@ -93,6 +80,9 @@ void LookupHS(int nid, int hscode) {
 					searchIdx++;
 				}
 			}
+			if(found){
+				cur_ID = pt;
+			}
 			pt = pt->next;
 		}
 	}
@@ -105,6 +95,7 @@ void LookupHS(int nid, int hscode) {
 void ADDHT(int hscode) {
 	//새 entry 생성
 	HTpointer new_entry = (HTpointer)malloc(sizeof(HTentry));
+	cur_ID = new_entry;
 	new_entry->index = nextid;
 	new_entry->line_num = line;
 	new_entry->type = 0; //default
@@ -139,7 +130,7 @@ void PrintHStable() {
 				sidx = ptr->index;
 				//identifier (variable type, line num) 출력
 				switch(ptr->type){
-					case parse_error: //error
+					//case parse_error: 
 					case void_function: printf("\t %s (function name, return type = void, line%d) \t", &ST[sidx],ptr->line_num); break;
 					case int_function: printf("\t %s (function name, return type = int, line%d) \t", &ST[sidx],ptr->line_num); break;
 					case float_function: printf("\t %s (function name, return type = float, line%d) \t", &ST[sidx],ptr->line_num); break;
