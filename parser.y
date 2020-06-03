@@ -10,7 +10,7 @@ extern void reportError();
 extern yylex();
 extern yyerror(char *s);
 
-struct HTentry* tmp;
+enum id_type tmp;
 int itype=0, vtype=0;
 %}
 %token TIDENT TNUMBER TCONST TELSE TIF TINT TRETURN TVOID TWHILE TRNUMBER TFLOAT
@@ -41,8 +41,8 @@ function_def	: function_header compound_st
 		{
 			/* 에러발생시 type 수정을 위해 default값 '0' 세팅 */
 			/* identifier about parse error */
-			tmp=cur_ID;
-			tmp->type=parse_error;
+			tmp=parse_error;
+			cur_ID->type=tmp;
 			itype=0;
 			vtype=0;
 			yyerrok;
@@ -77,10 +77,11 @@ type_specifier	: TINT { itype = 2; }
 function_name	: TIDENT
 		{
 			/* identifier about parse error or not defined identifier/function */
-			if(cur_ID->type == parse_error){
+			if(cur_ID->type==parse_error){
 				vtype = 0;  /*function name*/
-				tmp = cur_ID;
-				tmp->type=vtype+itype;
+				tmp=vtype+itype;
+				cur_ID->type=tmp;
+
 			}
 		}
 		;
@@ -119,9 +120,9 @@ declaration	: dcl_spec init_dcl_list TSEMI
 		}
 		| dcl_spec init_dcl_list error
 		{
-			tmp->type=parse_error; /*identifier about parse error*/
+			tmp=parse_error; /*identifier about parse error*/
 			yyerrok;
-			tmp = cur_ID;
+			cur_ID->type=tmp;
 			itype=0;
 			vtype=0;
 			reportError(nosemi);
@@ -136,18 +137,16 @@ init_declarator	: declarator
 		;
 declarator	: TIDENT
 		{
-			if(cur_ID->type==parse_error){ /* 현재 identifier가 type field를 가리키면*/
-				vtype=3;
-				tmp->type=itype+vtype;
-				tmp=cur_ID;
-			}
+			vtype=3;
+			tmp=itype+vtype;
+			cur_ID->type=tmp;
 		}
 		| TIDENT TSQUOPEN opt_number TSQUCLOSE
 		{
 			if(cur_ID->type==parse_error){   /* 현재 identifier가 type field를 가리키면 */
 				vtype=6;
-				tmp->type=itype+vtype;
-				tmp=cur_ID;
+				tmp=itype+vtype;
+				cur_ID->type=tmp;
 			}
 		}
 		| TIDENT TSQUOPEN opt_number error
