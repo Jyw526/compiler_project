@@ -29,7 +29,7 @@ translation_unit	: external_dcl
 external_dcl	: function_def
 		| declaration
 		| TIDENT TSEMI
-		| TIDENT error
+		| error TIDENT
 		{
 			yyerrok;
 			reportError(wrong_st); /* error - wrong statement */
