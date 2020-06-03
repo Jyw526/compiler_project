@@ -6,9 +6,12 @@
 #include "glob.h"
 
 /*yacc source for Mini C*/
-extern void ReportError();
+extern void reportError();
 extern yylex();
 extern yyerror(char *s);
+
+struct HTentry* tmp;
+int itype=0, vtype=0;
 %}
 %token TIDENT TNUMBER TCONST TELSE TIF TINT TRETURN TVOID TWHILE TRNUMBER TFLOAT
 %token TADDASSIGN TSUBASSIGN TMULASSIGN TDIVASSIGN TMODASSIGN
@@ -29,7 +32,7 @@ external_dcl	: function_def
 		| TIDENT error
 		{
 			yyerrok;
-			printError(wrong_st); /* error - wrong statement */
+			reportError(wrong_st); /* error - wrong statement */
 		}
 		;
 function_def	: function_header compound_st
@@ -38,17 +41,15 @@ function_def	: function_header compound_st
 		{
 			/* 에러발생시 type 수정을 위해 default값 '0' 세팅 */
 			/* identifier about parse error */
-			look_tmp->type=0;
-			/*
-			look_tmp=look_id;
-			look_tmp->itype=notype;
-			look_tmp->vtype=noval;
-			*/
+			tmp=look_id;
+			tmp->type=parse_error;
+			itype=0;
+			vtype=0;
 			yyerrok;
 			/* error - wrong function definition */
-			printError(wrong_funcdef);
+			reportError(wrong_funcdef);
 			/*
-			ReportError(nosemi);
+			reportError(nosemi);
 			*/
 		}
 		;
@@ -56,7 +57,7 @@ function_header	: dcl_spec function_name formal_param
 		| dcl_spec formal_param
 		{
 			yyerrok;
-			ReportError(wrong_funcdef);
+			reportError(wrong_funcdef);
 		}
 		;
 dcl_spec	: dcl_specifiers
@@ -69,31 +70,18 @@ dcl_specifier	: type_qualifier
 		;
 type_qualifier	: TCONST
 		;
-type_specifier	: TINT  { type_int=1;} /* type:integer */
-		| TVOID {type_void=1;}
-		/*
-		| TINT { look_tmp->itype = tint; }
-		| TVOID { look_tmp->itype = tvoid; }
-		| TFLOAT { look_tmp->itype = tfloat; }
-		*/
+type_specifier	: TINT { itype = 2; }
+		| TVOID { itype = 1; }
+		| TFLOAT { itype = 3; }
 		;
 function_name	: TIDENT
 		{
 			/* identifier about parse error or not defined identifier/function */
-			if(look_id->type==0 || look_id->type==5){
-				look_id->type = 4;  /*function name*/
-				type_int=0; /*not integer*/
-				type_void=0;    /*not void*/
-				look_tmp=look_id;
+			if(look_id->parse_error){
+				vtype = 0;  /*function name*/
+				tmp = look_id;
+				tmp->type=vtype+itype;
 			}
-			/*
-			if( look_id->vtype==noval || look_id->itype==notype ){
-				look_id->vtype = tfunc;
-				look_id->itype = look_tmp->itype;
-				//look_tmp->vtype = look_id->vtype;
-				//look_tmp->itype = look_id->itype;
-			}
-			*/
 		}
 		;
 formal_param	: TBROPEN opt_formal_param TBRCLOSE
@@ -106,7 +94,7 @@ formal_param_list	: param_dcl
 			| formal_param_list param_dcl
 			{
 				yyerrok;
-				ReportError(wrong_param);
+				reportError(wrong_param);
 			}
 			;
 param_dcl	: dcl_spec declarator
@@ -115,7 +103,7 @@ compound_st	: TCURLOPEN opt_dcl_list opt_stat_list TCURLCLOSE
 		| TCURLOPEN opt_dcl_list opt_stat_list error
 		{
 			yyerrok;
-			printError(nobrace);
+			reportError(nobrace);
 		}
 		;
 opt_dcl_list	: declaration_list
@@ -126,27 +114,17 @@ declaration_list	: declaration
 			;
 declaration	: dcl_spec init_dcl_list TSEMI
 		{
-			type_int=0; /*not integer*/
-			type_void=0; /*not void*/
-			/*
-			look_tmp->itype = notype;
-			look_tmp->vtype = noval;
-			*/
+			itype=0;
+			vtype=0;
 		}
 		| dcl_spec init_dcl_list error
 		{
-			look_tmp->type=0; /*identifier about parse error*/
+			tmp->type=parse_error; /*identifier about parse error*/
 			yyerrok;
-			type_int=0;
-			type_void=0;
-			printError(nosemi);
-			/*
-			yyerrok;
-			look_tmp = look_id;
-			ReportError(nosemi);
-			look_tmp->itype = notype;
-			look_tmp->vtype = noval;
-			*/
+			tmp = look_id;
+			itype=0;
+			vtype=0;
+			reportError(nosemi);
 		}
 		;
 init_dcl_list	: init_declarator
@@ -158,43 +136,24 @@ init_declarator	: declarator
 		;
 declarator	: TIDENT
 		{
-			if(look_id->type==0){ /* 현재 identifier가 type field를 가리키면*/
-				if(type_int==1) /* type:integer */
-				look_id->type=1;    /* integer scalar variable */
-			else if(type_void==1)
-				look_id->type=2;
+			if(look_id->type==parse_error){ /* 현재 identifier가 type field를 가리키면*/
+				vtype=3;
+				tmp->type=itype+vtype;
+				tmp=look_id;
 			}
-			look_tmp=look_id;
-			/*
-			if( look_id->itype==notype ){
-				look_id->vtype=tscalar;
-				if( look_tmp->itype==tint ) look_id->itype = tint;
-				else if( look_tmp->itype==tvoid ) look_id->itype = tvoid;
-				else if( look_tmp->itype==tfloat ) look_id->itype = tfloat;
-			}
-			//look_tmp = look_id;
-			*/
 		}
 		| TIDENT TSQUOPEN opt_number TSQUCLOSE
 		{
-			if(look_id->type==0){   /* 현재 identifier가 type field를 가리키면 */
-				look_id->type=3;    /* array integer variable */
-				look_tmp=look_id;
+			if(look_id->type==parse_error){   /* 현재 identifier가 type field를 가리키면 */
+				vtype=6;
+				tmp->type=itype+vtype;
+				tmp=look_id;
 			}
-			/*
-			if( look_id->itype==notype ){
-				look_id->vtype = tarray;
-				if( look_tmp->itype==tint ) look_id->itype = tint;
-				else if( look_tmp->itype==tvoid ) look_id->itype = tvoid;
-				else if( look_tmp->itype==tfloat ) look_id->itype = tfloat;
-			}
-			//look_tmp = look_id;
-			*/
 		}
 		| TIDENT TSQUOPEN opt_number error
 		{
 			yyerrok;
-			printError(nobracket);
+			reportError(nobracket);
 		}
 		;
 opt_number	: TNUMBER
@@ -218,7 +177,7 @@ expression_st	: opt_expression TSEMI
 		| expression error
 		{
 			yyerrok;
-			printError(nosemi);
+			reportError(nosemi);
 		}
 		;
 opt_expression	: expression
@@ -277,7 +236,7 @@ postfix_exp	: primary_exp
 		| postfix_exp TSQUOPEN expression error
 		{
 			yyerrok;
-			ReportError(nobracket);
+			reportError(nobracket);
 		}
 		| postfix_exp TBROPEN opt_actual_param TBRCLOSE
 		| postfix_exp TINC
@@ -292,14 +251,6 @@ actual_param_list	: assignment_exp
 			| actual_param_list TCOMMA assignment_exp
 			;
 primary_exp	: TIDENT
-		{
-			if(look_id->type==0) /* 현재 identifier가 type field를 가리키면 */
-			look_id->type=5; /* not defined identifier/function */
-			/*
-			if( look_id->vtype==noval )
-				look_id->itype = notdef;
-			*/
-		}
 		| TNUMBER
 		| TRNUMBER
 		| TBROPEN expression TBRCLOSE
