@@ -22,5 +22,29 @@ void reportError(ERRORtypes err) {
 		printf("%d\t\t\t%s Illegal IDENT\n", line, yytext);
 		cErrors++;
 		break;
+	case wrong_st:
+		printf("%d\t\t\t Wrong statement\n", line);
+		cErrors++;
+		break;
+	case wrong_param:
+		printf("%d\t\t\t Wrong parameter\n", line);
+		cErrors++;
+		break;
+	case wrong_funcdef:
+		printf("%d\t\t\t Wrong function definition\n", line);
+		cErrors++;
+		break;
+	case nobrace:
+		printf("%d\t\t\t Missing brace\n", line);
+		cErrors++;
+		break;
+	case nosemi:
+		printf("%d\t\t\t Missing semicolon\n", line);
+		cErrors++;
+		break;
+	case nobracket:
+		printf("%d\t\t\t Missing bracket\n", line);
+		cErrors++;
+		break;
 	}
 }
