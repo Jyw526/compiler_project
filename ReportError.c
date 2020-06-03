@@ -23,29 +23,28 @@ void reportError(ERRORtypes err) {
 		cErrors++;
 		break;
 	case wrong_st:
-		printf("%d\t\t\t%s Wrong statement\n", line, yytext);
+		printf("%d\t\t\t Wrong statement\n", line);
 		cErrors++;
 		break;
 	case wrong_param:
-		printf("%d\t\t\t%s Wrong parameter\n", line, yytext);
+		printf("%d\t\t\t Wrong parameter\n", line);
 		cErrors++;
 		break;
 	case wrong_funcdef:
-		printf("%d\t\t\t%s Wrong function definition\n", line, yytext);
+		printf("%d\t\t\t Wrong function definition\n", line);
 		cErrors++;
 		break;
 	case nobrace:
-		printf("%d\t\t\t%s Missing brace\n", line, yytext);
+		printf("%d\t\t\t Missing brace\n", line);
 		cErrors++;
 		break;
 	case nosemi:
-		printf("%d\t\t\t%s Missing semicolon\n", line, yytext);
+		printf("%d\t\t\t Missing semicolon\n", line);
 		cErrors++;
 		break;
 	case nobracket:
-		printf("%d\t\t\t%s Missing bracket\n", line, yytext);
+		printf("%d\t\t\t Missing bracket\n", line);
 		cErrors++;
 		break;
-
 	}
 }
