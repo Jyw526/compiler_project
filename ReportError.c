@@ -46,5 +46,13 @@ void reportError(ERRORtypes err) {
 		printf("%d\t\t\t Missing bracket\n", line);
 		cErrors++;
 		break;
+	case nocomma:
+		printf("%d\t\t\t Missing comma\n", line);
+		cErrors++;
+		break;
+	case wrong_def:
+		printf("%d\t\t\t Wrong definition\n", line);
+		cErrors++;
+		break;
 	}
 }
