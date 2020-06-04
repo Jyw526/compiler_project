@@ -29,6 +29,11 @@ translation_unit	: external_dcl
 external_dcl	: function_def
 		| declaration
 		| TIDENT TSEMI
+		| TIDENT error
+		{
+			yyerrok;
+			reportError(wrong_st); /* error - wrong statement */
+		}
 		| error TIDENT
 		{
 			yyerrok;
@@ -96,14 +101,14 @@ formal_param_list	: param_dcl
 			| formal_param_list param_dcl
 			{
 				yyerrok;
-//				reportError(nocomma);
+				reportError(nocomma);
 			}
 			;
 param_dcl	: dcl_spec declarator
 		| dcl_spec error
 		{
 			yyerrok;
-//			reportError(wrong_def);
+			reportError(wrong_def);
 		}
 		;
 compound_st	: TCURLOPEN opt_dcl_list opt_stat_list TCURLCLOSE
@@ -128,6 +133,7 @@ declaration	: dcl_spec init_dcl_list TSEMI
 		{
 			tmp=parse_error; /*identifier about parse error*/
 			yyerrok;
+			tmp=itype+vtype;
 			cur_ID->type=tmp;
 			itype=0;
 			vtype=0;
@@ -136,11 +142,16 @@ declaration	: dcl_spec init_dcl_list TSEMI
 		| dcl_spec error
 		{
 			yyerrok;
-//			reportError(wrong_def);
+			reportError(wrong_def);
 		}
 		;
 init_dcl_list	: init_declarator
 		| init_dcl_list TCOMMA init_declarator
+		| init_dcl_list init_declarator
+		{
+			yyerrok;
+			reportError(nocomma);
+		}
 		;
 init_declarator	: declarator
 		| declarator TASSIGN TNUMBER
