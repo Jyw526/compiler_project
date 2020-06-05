@@ -10,49 +10,37 @@
 
 void yyerror(char* s)
 {
-
 }
 void reportError(ERRORtypes err) {
+	printf("Line%d\t\t\t",line);
+	cErrors++;
 	switch (err) {
 	case ILLICHAR:
-		printf("%d\t\t\t%s Illegal Character\n", line, yytext);
-		cErrors++;
+		printf("Scanner Error: '%s' Illegal Character\n", yytext);
 		break;
 	case ILLIDENT:
-		printf("%d\t\t\t%s Illegal IDENT\n", line, yytext);
-		cErrors++;
+		printf("Scanner Error: '%s' Illegal IDENT\n", yytext);
 		break;
 	case wrong_st:
-		printf("%d\t\t\t Wrong statement\n", line);
-		cErrors++;
+		printf("Parser Error: '%s' Wrong statement\n", yytext);
 		break;
 	case wrong_param:
-		printf("%d\t\t\t Wrong parameter\n", line);
-		cErrors++;
+		printf("Parser Error: Wrong parameter\n");
 		break;
 	case wrong_funcdef:
-		printf("%d\t\t\t Wrong function definition\n", line);
-		cErrors++;
-		break;
-	case nobrace:
-		printf("%d\t\t\t Missing brace\n", line);
-		cErrors++;
+		printf("Parser Error: Wrong function definition\n");
 		break;
 	case nosemi:
-		printf("%d\t\t\t Missing semicolon\n", line);
-		cErrors++;
+		printf("Parser Error: Missing semicolon\n");
 		break;
 	case nobracket:
-		printf("%d\t\t\t Missing bracket\n", line);
-		cErrors++;
+		printf("Parser Error: Missing bracket\n");
 		break;
 	case nocomma:
-		printf("%d\t\t\t Missing comma\n", line);
-		cErrors++;
+		printf("Parser Error: Missing comma\n");
 		break;
 	case wrong_def:
-		printf("%d\t\t\t Wrong definition\n", line);
-		cErrors++;
+		printf("Parser Error: Wrong variable definition\n");
 		break;
 	}
 }

@@ -66,7 +66,7 @@ int symbolTManagement();
 "/*"([^*]|\*+[^*/])*\**"*/" ;
 "//".*                      ;
 [ \t]                       ;
-"\n"                        line++;
+"\n"                        line++; 
 .			reportError(ILLICHAR);
 [0-9]+[A-Za-z_][A-Za-z0-9_]*		reportError(ILLIDENT);
 %%

@@ -28,17 +28,37 @@ translation_unit	: external_dcl
 			;
 external_dcl	: function_def
 		| declaration
-		| TIDENT TSEMI
-		| TIDENT error
-		{
-			yyerrok;
-			reportError(wrong_st); /* error - wrong statement */
-		}
-		| error TIDENT
-		{
-			yyerrok;
-			reportError(wrong_st); /* error - wrong statement */
-		}
+		| TIDENT {reportError(wrong_st);}
+		| TADDASSIGN {reportError(wrong_st);}
+		| TSUBASSIGN {reportError(wrong_st);}
+		| TMULASSIGN {reportError(wrong_st);}
+		| TDIVASSIGN {reportError(wrong_st);}
+		| TMODASSIGN {reportError(wrong_st);}
+		| TNUMBER {reportError(wrong_st);}
+		| TRNUMBER {reportError(wrong_st);}
+		| TOR {reportError(wrong_st);}
+		| TAND {reportError(wrong_st);}
+		| TEQUAL {reportError(wrong_st);}
+		| TNOTEQU {reportError(wrong_st);}
+		| TGREAT {reportError(wrong_st);}
+		| TGREATE {reportError(wrong_st);}
+		| TLESSE {reportError(wrong_st);}
+		| TINC {reportError(wrong_st);}
+		| TDEC {reportError(wrong_st);}
+		| TPLUS {reportError(wrong_st);}
+		| TSTAR {reportError(wrong_st);}
+		| TSLASH {reportError(wrong_st);}
+		| TMOD {reportError(wrong_st);}
+		| TASSIGN {reportError(wrong_st);}
+		| TCOMMA {reportError(wrong_st);}
+		| TBRCLOSE {reportError(nobracket);}
+		| TCURLCLOSE  {reportError(nobracket);}
+		| TSQUCLOSE {reportError(nobracket);}
+		| TNOT {reportError(wrong_st);}
+		| TMINUS {reportError(wrong_st);}
+		| TLESS {reportError(wrong_st);}
+		| TSEMI 
+		| error { yyerrok;reportError(wrong_st);}
 		;
 function_def	: function_header compound_st
 		| function_header TSEMI
@@ -108,7 +128,7 @@ param_dcl	: dcl_spec declarator
 		| dcl_spec error
 		{
 			yyerrok;
-			reportError(wrong_def);
+			reportError(wrong_param);
 		}
 		;
 compound_st	: TCURLOPEN opt_dcl_list opt_stat_list TCURLCLOSE
@@ -133,13 +153,12 @@ declaration	: dcl_spec init_dcl_list TSEMI
 		{
 			tmp=parse_error; /*identifier about parse error*/
 			yyerrok;
-			tmp=itype+vtype;
 			cur_ID->type=tmp;
 			itype=0;
 			vtype=0;
 			reportError(nosemi);
 		}
-		| dcl_spec error
+		| dcl_spec error TSEMI
 		{
 			yyerrok;
 			reportError(wrong_def);
@@ -212,11 +231,6 @@ if_st	: TIF TBROPEN expression TBRCLOSE statement %prec LOWER_THAN_ELSE
 		yyerrok;
 		reportError(nobracket);
 	}
-	| TIF TBROPEN expression error
-	{
-		yyerrok;
-		reportError(nobracket);
-	}
 	;
 while_st	: TWHILE TBROPEN expression TBRCLOSE statement
 		| TWHILE error
@@ -224,13 +238,13 @@ while_st	: TWHILE TBROPEN expression TBRCLOSE statement
 			yyerrok;
 			reportError(nobracket);
 		}
-		| TWHILE TBROPEN expression error
-		{
-			yyerrok;
-			reportError(nobracket);
-		}
 		;
 return_st	: TRETURN opt_expression TSEMI
+		| TRETURN opt_expression error
+		{
+			yyerrok;
+			reportError(nosemi);
+		}
 		;
 expression	: assignment_exp
 		;
