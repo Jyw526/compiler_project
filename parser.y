@@ -35,7 +35,7 @@ external_dcl	: function_def
 			reportError(wrong_st); /* error - wrong statement */
 		}
 		| temp_char { yyerrok; reportError(wrong_st); }
-		| temp_close { yyerrok; reportError(nobracket); }
+		| temp_close 
 		| TSEMI
 		;
 temp_char	: TADDASSIGN
@@ -64,9 +64,9 @@ temp_char	: TADDASSIGN
 		| TMINUS
 		| TLESS
 		;
-temp_close	: TBRCLOSE
-		| TCURLCLOSE
-		| TSQUCLOSE
+temp_close	: TBRCLOSE { yyerrok; reportError(nobracket); }
+		| TCURLCLOSE { yyerrok; reportError(nobrace); }
+		| TSQUCLOSE { yyerrok; reportError(nosqubracket); }
 		;
 function_def	: function_header compound_st
 		| function_header TSEMI
@@ -143,7 +143,7 @@ compound_st	: TCURLOPEN opt_dcl_list opt_stat_list TCURLCLOSE
 		| TCURLOPEN opt_dcl_list opt_stat_list error
 		{
 			yyerrok;
-			reportError(nobracket);
+			reportError(nobrace);
 		}
 		;
 opt_dcl_list	: declaration_list
@@ -202,7 +202,7 @@ declarator	: TIDENT
 		| TIDENT TSQUOPEN opt_number error
 		{
 			yyerrok;
-			reportError(nobracket);
+			reportError(nosqubracket);
 		}
 		;
 opt_number	: TNUMBER
@@ -312,7 +312,7 @@ postfix_exp	: primary_exp
 		| postfix_exp TSQUOPEN expression error
 		{
 			yyerrok;
-			reportError(nobracket);
+			reportError(nosqubracket);
 		}
 		| postfix_exp TBROPEN opt_actual_param TBRCLOSE
 		| postfix_exp TBROPEN opt_actual_param error
