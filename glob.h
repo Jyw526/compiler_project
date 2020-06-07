@@ -7,7 +7,7 @@
 #define STsize 1000	//size of string table
 #define HTsize 100	//size of hash table
 
-enum errorTypes { ILLICHAR, ILLIDENT, wrong_st, wrong_param, wrong_funcdef, wrong_def, nosemi, nobracket, nobrace, nosqubracket, nocomma}; //parse error 추가해야함
+enum errorTypes { ILLICHAR, ILLIDENT, wrong_st, wrong_param, wrong_funcdef, wrong_def, nosemi, nobracket, nobrace, nosqubracket, nocomma, nocondition}; //parse error 추가해야함
 typedef enum errorTypes ERRORtypes;
 //identifier type
 enum id_type { parse_error, void_function, int_function, float_function, void_scalar, int_scalar, float_scalar, void_array, int_array, float_array };

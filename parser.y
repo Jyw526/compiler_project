@@ -242,6 +242,11 @@ opt_expression	: expression
 		|
 		;
 if_st	: TIF TBROPEN expression TBRCLOSE statement %prec LOWER_THAN_ELSE
+	| TIF TBROPEN TBRCLOSE error
+	{
+		yyerrok;
+		reportError(nocondition);
+	}
 	| TIF TBROPEN expression TBRCLOSE statement TELSE statement
 	| TIF TBROPEN expression error
 	{
@@ -256,6 +261,12 @@ if_st	: TIF TBROPEN expression TBRCLOSE statement %prec LOWER_THAN_ELSE
 	}
 	;
 while_st	: TWHILE TBROPEN expression TBRCLOSE statement
+		| TWHILE TBROPEN TBRCLOSE error
+		{
+			yyerrok;
+			reportError(nocondition);
+			
+		}
 		| TWHILE TBROPEN expression error
 		{
 			yyerrok;
@@ -278,42 +289,105 @@ expression	: assignment_exp
 		;
 assignment_exp	: logical_or_exp
 		| unary_exp TASSIGN assignment_exp
+		| unary_exp TASSIGN error
+		{
+			yyerrok;
+			reportError(wrong_st);
+		}
 		| unary_exp TADDASSIGN assignment_exp
+		| unary_exp TADDASSIGN error
+		{
+			yyerrok;
+			reportError(wrong_st);
+		}
 		| unary_exp TSUBASSIGN assignment_exp
+		| unary_exp TSUBASSIGN error
+		{
+			yyerrok;
+			reportError(wrong_st);
+		}
 		| unary_exp TMULASSIGN assignment_exp
+		| unary_exp TMULASSIGN error
+		{
+			yyerrok;
+			reportError(wrong_st);
+		}
 		| unary_exp TDIVASSIGN assignment_exp
+		| unary_exp TDIVASSIGN error
+		{
+			yyerrok;
+			reportError(wrong_st);
+		}
 		| unary_exp TMODASSIGN assignment_exp
+		| unary_exp TMODASSIGN error
+		{
+			yyerrok;
+			reportError(wrong_st);
+		}
 		;
 logical_or_exp	: logical_and_exp
 		| logical_or_exp TOR logical_and_exp
+		| logical_or_exp TOR error
+		{
+			yyerrok;
+			reportError(wrong_st);
+		}
 		;
 logical_and_exp	: equality_exp
 		| logical_and_exp TAND equality_exp
+		| logical_and_exp TAND error
+		{
+			yyerrok;
+			reportError(wrong_st);
+		}
 		;
 equality_exp	: relational_exp
 		| equality_exp TEQUAL relational_exp
+		| equality_exp TEQUAL error
+		{
+			yyerrok;
+			reportError(wrong_st);
+		}
 		| equality_exp TNOTEQU relational_exp
+		| equality_exp TNOTEQU error
+		{
+			yyerrok;
+			reportError(wrong_st);
+		}
 		;
 relational_exp	: additive_exp
 		| relational_exp TGREAT additive_exp
+		| relational_exp TGREAT error  { yyerrok; reportError(wrong_st); }
 		| relational_exp TLESS additive_exp
+		| relational_exp TLESS error  { yyerrok; reportError(wrong_st); }
 		| relational_exp TGREATE additive_exp
+		| relational_exp TGREATE error  { yyerrok; reportError(wrong_st); }
 		| relational_exp TLESSE additive_exp
+		| relational_exp TLESSE error  { yyerrok; reportError(wrong_st); }
 		;
 additive_exp	: multiplicative_exp
 		| additive_exp TPLUS multiplicative_exp
+		| additive_exp TPLUS error { yyerrok; reportError(wrong_st); }
 		| additive_exp TMINUS multiplicative_exp
+		| additive_exp TMINUS error { yyerrok; reportError(wrong_st); }
 		;
 multiplicative_exp	: unary_exp
 			| multiplicative_exp TSTAR unary_exp
+			| multiplicative_exp TSTAR error  { yyerrok; reportError(wrong_st); }
 			| multiplicative_exp TSLASH unary_exp
+			| multiplicative_exp TSLASH error  { yyerrok; reportError(wrong_st); }
 			| multiplicative_exp TMOD unary_exp
+			| multiplicative_exp TMOD error  { yyerrok; reportError(wrong_st); }
 			;
 unary_exp	: postfix_exp
 		| TMINUS unary_exp
+		| TMINUS error { yyerrok; reportError(wrong_st); }
 		| TNOT unary_exp
+		| TNOT error { yyerrok; reportError(wrong_st); }
 		| TINC unary_exp
+		| TINC error { yyerrok; reportError(wrong_st); }
 		| TDEC unary_exp
+		| TDEC error { yyerrok; reportError(wrong_st); }
 		;
 postfix_exp	: primary_exp
 		| postfix_exp TSQUOPEN expression TSQUCLOSE
@@ -338,6 +412,7 @@ actual_param	: actual_param_list
 		;
 actual_param_list	: assignment_exp
 			| actual_param_list TCOMMA assignment_exp
+			| actual_param_list TCOMMA error { yyerrok; reportError(wrong_st); }
 			;
 primary_exp	: TIDENT
 		| TNUMBER

@@ -22,7 +22,7 @@ void reportError(ERRORtypes err) {
 		printf("Scanner Error: '%s' Illegal IDENT\n", yytext);
 		break;
 	case wrong_st:
-		printf("Parser Error: '%s' Wrong statement\n", yytext);
+		printf("Parser Error: Wrong statement\n");
 		break;
 	case wrong_param:
 		printf("Parser Error: Wrong parameter\n");
@@ -47,6 +47,9 @@ void reportError(ERRORtypes err) {
 		break;
 	case wrong_def:
 		printf("Parser Error: Wrong variable definition\n");
+		break;
+	case nocondition:
+		printf("Parser Error: Missing condition\n");
 		break;
 	}
 }
