@@ -70,9 +70,9 @@ temp_close	: TBRCLOSE { yyerrok; reportError(nobracket); }
 		;
 function_def	: function_header compound_st
 		| function_header TSEMI
-		| function_header error /* ë¹„ì •ìƒì ì¸ í•¨ìˆ˜ ì •ì˜ */
+		| function_header error /* ë¹„ì •?ƒ? ?¸ ?•¨?ˆ˜ ? •?˜ */
 		{
-			/* ì—ëŸ¬ë°œìƒì‹œ type ìˆ˜ì •ì„ ìœ„í•´ defaultê°’ '0' ì„¸íŒ… */
+			/* ?—?Ÿ¬ë°œìƒ?‹œ type ?ˆ˜? •?„ ?œ„?•´ defaultê°? '0' ?„¸?Œ… */
 			/* identifier about parse error */
 			tmp=parse_error;
 			cur_ID->type=tmp;
@@ -201,7 +201,7 @@ declarator	: TIDENT
 		}
 		| TIDENT TSQUOPEN opt_number TSQUCLOSE
 		{
-			if(cur_ID->type==parse_error){   /* í˜„ìž¬ identifierê°€ type fieldë¥¼ ê°€ë¦¬í‚¤ë©´ */
+			if(cur_ID->type==parse_error){   /* ?˜„?ž¬ identifierê°? type fieldë¥? ê°?ë¦¬í‚¤ë©? */
 				vtype=6;
 				tmp=itype+vtype;
 				cur_ID->type=tmp;
@@ -324,6 +324,12 @@ assignment_exp	: logical_or_exp
 			yyerrok;
 			reportError(wrong_st);
 		}
+		| TASSIGN { yyerrok; reportError(wrong_st); }
+		| TMULASSIGN { yyerrok; reportError(wrong_st); }
+		| TDIVASSIGN { yyerrok; reportError(wrong_st); }
+		| TMODASSIGN { yyerrok; reportError(wrong_st); }
+		| TSUBASSIGN { yyerrok; reportError(wrong_st); }
+		| TADDASSIGN { yyerrok; reportError(wrong_st); }
 		;
 logical_or_exp	: logical_and_exp
 		| logical_or_exp TOR logical_and_exp
@@ -332,6 +338,7 @@ logical_or_exp	: logical_and_exp
 			yyerrok;
 			reportError(wrong_st);
 		}
+		| TOR { yyerrok; reportError(wrong_st); }
 		;
 logical_and_exp	: equality_exp
 		| logical_and_exp TAND equality_exp
@@ -340,6 +347,7 @@ logical_and_exp	: equality_exp
 			yyerrok;
 			reportError(wrong_st);
 		}
+		| TAND { yyerrok; reportError(wrong_st); }
 		;
 equality_exp	: relational_exp
 		| equality_exp TEQUAL relational_exp
@@ -354,6 +362,8 @@ equality_exp	: relational_exp
 			yyerrok;
 			reportError(wrong_st);
 		}
+		| TEQUAL { yyerrok; reportError(wrong_st); }
+		| TNOTEQU { yyerrok; reportError(wrong_st); }
 		;
 relational_exp	: additive_exp
 		| relational_exp TGREAT additive_exp
@@ -364,12 +374,17 @@ relational_exp	: additive_exp
 		| relational_exp TGREATE error  { yyerrok; reportError(wrong_st); }
 		| relational_exp TLESSE additive_exp
 		| relational_exp TLESSE error  { yyerrok; reportError(wrong_st); }
-		;
+		| TGREAT  { yyerrok; reportError(wrong_st); }
+		| TLESS  { yyerrok; reportError(wrong_st); }
+		| TGREATE  { yyerrok; reportError(wrong_st); }
+		| TLESSE  { yyerrok; reportError(wrong_st); }
+		; 
 additive_exp	: multiplicative_exp
 		| additive_exp TPLUS multiplicative_exp
 		| additive_exp TPLUS error { yyerrok; reportError(wrong_st); }
 		| additive_exp TMINUS multiplicative_exp
 		| additive_exp TMINUS error { yyerrok; reportError(wrong_st); }
+		| TPLUS { yyerrok; reportError(wrong_st); }
 		;
 multiplicative_exp	: unary_exp
 			| multiplicative_exp TSTAR unary_exp
@@ -413,6 +428,7 @@ actual_param	: actual_param_list
 actual_param_list	: assignment_exp
 			| actual_param_list TCOMMA assignment_exp
 			| actual_param_list TCOMMA error { yyerrok; reportError(wrong_st); }
+			| TCOMMA { yyerrok; reportError(wrong_st); }
 			;
 primary_exp	: TIDENT
 		| TNUMBER
