@@ -89,6 +89,11 @@ function_header	: dcl_spec function_name formal_param
 			yyerrok;
 			reportError(wrong_funcdef);
 		}
+		| function_name formal_param
+		{
+			yyerrok;
+			reportError(wrong_funcdef);
+		}
 		;
 dcl_spec	: dcl_specifiers
 		;
@@ -107,11 +112,10 @@ type_specifier	: TINT { itype = 2; }
 function_name	: TIDENT
 		{
 			/* identifier about parse error or not defined identifier/function */
-			if(cur_ID->type==parse_error){
-				vtype = 0;  /*function name*/
-				tmp=vtype+itype;
-				cur_ID->type=tmp;
-			}
+			vtype = 0;  /*function name*/
+			tmp=vtype+itype;
+			cur_ID->type=tmp;
+			itype=0;
 		}
 		;
 formal_param	: TBROPEN opt_formal_param TBRCLOSE
@@ -135,6 +139,10 @@ formal_param_list	: param_dcl
 param_dcl	: dcl_spec declarator
 		| dcl_spec error 
 		{
+			yyerrok;
+			reportError(wrong_param);
+		}
+		| declarator{
 			yyerrok;
 			reportError(wrong_param);
 		}
