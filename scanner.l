@@ -12,6 +12,7 @@ int line=1; //token line number
 int st_idx=-1; //st index (default=-1)
 
 int symbolTManagement();
+void checkline();
 %}
 %%
 "const"						return(TCONST);
@@ -63,14 +64,18 @@ int symbolTManagement();
 [0-9]|([1-9][0-9]*)					return(TNUMBER);
 [0-9]+"."[0-9]+				return(TRNUMBER);
 
-"/*"([^*]|\*+[^*/])*\**"*/" ;
-"//".*                      ;
+"/*"([^*]|\*+[^*/])*\**"*/" checkline();
+"//".*                      checkline();
 [ \t]                       ;
 "\n"                        line++; 
 .			reportError(ILLICHAR);
 [0-9]+[A-Za-z_][A-Za-z0-9_]*		reportError(ILLIDENT);
 %%
-
+void checkline(){
+     for(int i=0;i<yyleng;i++){
+        if(yytext[i] == '\n') line++;
+    }
+}
 /*ident matching*/
 int symbolTManagement(){
     return SymbolTable();
