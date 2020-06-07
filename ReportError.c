@@ -36,6 +36,12 @@ void reportError(ERRORtypes err) {
 	case nobracket:
 		printf("Parser Error: Missing bracket\n");
 		break;
+	case nobrace:
+		printf("Parser Error: Missing brace\n");
+		break;
+	case nosqubracket:
+		printf("Parser Error: Missing square bracket\n");
+		break;
 	case nocomma:
 		printf("Parser Error: Missing comma\n");
 		break;

@@ -29,21 +29,15 @@ translation_unit	: external_dcl
 external_dcl	: function_def
 		| declaration
 		| TIDENT TSEMI
-		| TIDENT error
+		| error
 		{
 			yyerrok;
 			reportError(wrong_st); /* error - wrong statement */
 		}
-		| error TIDENT
-		{
-			yyerrok;
-			reportError(wrong_st); /* error - wrong statement */
-		}
-//		| error error { yyerrok; printf("f**kin\n"); }
 		| temp_char { yyerrok; reportError(wrong_st); }
-		| temp_close { yyerrok; reportError(nobracket); }
+		| temp_close 
+		| TSEMI
 		;
-//temp_char	: TIDENT
 temp_char	: TADDASSIGN
 		| TSUBASSIGN
 		| TMULASSIGN
@@ -69,11 +63,10 @@ temp_char	: TADDASSIGN
 		| TNOT
 		| TMINUS
 		| TLESS
-//		| TSEMI
 		;
-temp_close	: TBRCLOSE
-		| TCURLCLOSE
-		| TSQUCLOSE
+temp_close	: TBRCLOSE { yyerrok; reportError(nobracket); }
+		| TCURLCLOSE { yyerrok; reportError(nobrace); }
+		| TSQUCLOSE { yyerrok; reportError(nosqubracket); }
 		;
 function_def	: function_header compound_st
 		| function_header TSEMI
@@ -140,18 +133,17 @@ formal_param_list	: param_dcl
 			}
 			;
 param_dcl	: dcl_spec declarator
-//		| dcl_spec error
-		| dcl_spec error TSEMI
+		| dcl_spec error 
 		{
 			yyerrok;
-			reportError(wrong_def);
+			reportError(wrong_param);
 		}
 		;
 compound_st	: TCURLOPEN opt_dcl_list opt_stat_list TCURLCLOSE
 		| TCURLOPEN opt_dcl_list opt_stat_list error
 		{
 			yyerrok;
-			reportError(nobracket);
+			reportError(nobrace);
 		}
 		;
 opt_dcl_list	: declaration_list
@@ -175,11 +167,10 @@ declaration	: dcl_spec init_dcl_list TSEMI
 			vtype=0;
 			reportError(nosemi);
 		}
-		| dcl_spec error
+		| dcl_spec error TSEMI
 		{
 			yyerrok;
 			reportError(wrong_def);
-			//reportError(wrong_param);
 		}
 		;
 init_dcl_list	: init_declarator
@@ -211,7 +202,7 @@ declarator	: TIDENT
 		| TIDENT TSQUOPEN opt_number error
 		{
 			yyerrok;
-			reportError(nobracket);
+			reportError(nosqubracket);
 		}
 		;
 opt_number	: TNUMBER
@@ -244,29 +235,29 @@ opt_expression	: expression
 		;
 if_st	: TIF TBROPEN expression TBRCLOSE statement %prec LOWER_THAN_ELSE
 	| TIF TBROPEN expression TBRCLOSE statement TELSE statement
+	| TIF TBROPEN expression error
+	{
+		yyerrok;
+		reportError(nobracket);
+	}	
 	| TIF error
 	{
 		yyerrok;
 		printf("if");
 		reportError(nobracket);
 	}
-/*	| TIF TBROPEN expression error
-	{
-		yyerrok;
-		reportError(nobracket);
-	}*/
 	;
 while_st	: TWHILE TBROPEN expression TBRCLOSE statement
+		| TWHILE TBROPEN expression error
+		{
+			yyerrok;
+			reportError(nobracket);
+		}
 		| TWHILE error
 		{
 			yyerrok;
 			reportError(nobracket);
 		}
-/*		| TWHILE TBROPEN expression error
-		{
-			yyerrok;
-			reportError(nobracket);
-		}*/
 		;
 return_st	: TRETURN opt_expression TSEMI
 		| TRETURN opt_expression error
@@ -321,7 +312,7 @@ postfix_exp	: primary_exp
 		| postfix_exp TSQUOPEN expression error
 		{
 			yyerrok;
-			reportError(nobracket);
+			reportError(nosqubracket);
 		}
 		| postfix_exp TBROPEN opt_actual_param TBRCLOSE
 		| postfix_exp TBROPEN opt_actual_param error
